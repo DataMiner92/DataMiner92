@@ -1,5 +1,5 @@
-- 👋 Hi, I’m @DataMiner92
-- 👀 I’m interested in Python Prohgramming
+- 👋 Hi, I’m @DataMiner
+- 👀 I’m interested in Python Programming
 - 🌱 I’m currently learning Flask, DL, ML and Data Science
 - 💞️ I’m looking to collaborate on testing, improvement and reviews
 - 📫 How to reach me ..dataminer92@gmail.com
