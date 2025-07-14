@@ -1,0 +1,3667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 100vw;
+            width: 100vw;
+            margin: 0;
+            padding: 0 0 40px 0;
+            min-height: 100vh;
+        }
+        .container:before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(102, 126, 234, 0.15);
+            backdrop-filter: blur(10px);
+            z-index: -1;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+            font-weight: 300;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .nav-tab {
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(45deg, #4299e1, #667eea);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-height: 500px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .form-section h3 {
+            margin-bottom: 20px;
+            color: #4a5568;
+            font-size: 1.4rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #4a5568;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .table th,
+        .table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .table th {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            font-weight: 500;
+        }
+
+        .table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: relative;
+            background: white;
+            margin: 5% auto;
+            padding: 30px;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .appointment-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #667eea;
+        }
+
+        .appointment-time {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 1.1rem;
+        }
+
+        .appointment-patient {
+            margin: 10px 0;
+            font-size: 1.1rem;
+        }
+
+        .appointment-doctor {
+            color: #6c757d;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-scheduled {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-completed {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .status-cancelled {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        /* --- Added s styling --- */
+
+        /* Pharmacy  */
+        #pharmacy h2 {
+            color: #764ba2;
+            margin-bottom: 20px;
+        }
+        #pharmacy .form-section {
+            background: #f3e8ff;
+        }
+        #pharmacy .table th {
+            background: linear-gradient(45deg, #764ba2, #667eea);
+        }
+
+        /* Beds  */
+        #beds h2 {
+            color: #4299e1;
+            margin-bottom: 20px;
+        }
+        #beds .form-section {
+            background: #e6f7ff;
+        }
+        #beds .table th {
+            background: linear-gradient(45deg, #4299e1, #667eea);
+        }
+
+        /* Departments  */
+        #departments h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        #departments .form-section {
+            background: #e9f5ff;
+        }
+        #departments .table th {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+        }
+
+        /* Users  */
+        #users h2 {
+            color: #4a5568;
+            margin-bottom: 20px;
+        }
+        #users .form-section {
+            background: #f8fafc;
+        }
+        #users .table th {
+            background: linear-gradient(45deg, #4a5568, #667eea);
+        }
+
+        /* Assets  */
+        #assets h2 {
+            color: #764ba2;
+            margin-bottom: 20px;
+        }
+        #assets .form-section {
+            background: #f3e8ff;
+        }
+        #assets .table th {
+            background: linear-gradient(45deg, #764ba2, #667eea);
+        }
+
+        /* Staff Schedule  */
+        #staffSchedule h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        #staffSchedule .form-section {
+            background: #e6f7ff;
+        }
+        #staffSchedule .table th {
+            background: linear-gradient(45deg, #667eea, #4299e1);
+        }
+
+        /* Insurance  */
+        #insurance h2 {
+            color: #4299e1;
+            margin-bottom: 20px;
+        }
+        #insurance .form-section {
+            background: #e6f7ff;
+        }
+        #insurance .table th {
+            background: linear-gradient(45deg, #4299e1, #764ba2);
+        }
+
+        /* Reports  */
+        #reports h2 {
+            color: #764ba2;
+            margin-bottom: 20px;
+        }
+
+        /* Audit Logs  */
+        #auditLogs h2 {
+            color: #4a5568;
+            margin-bottom: 20px;
+        }
+
+        /* General for added s */
+        #pharmacy .btn-danger,
+        #beds .btn-danger,
+        #departments .btn-danger,
+        #users .btn-danger,
+        #assets .btn-danger,
+        #staffSchedule .btn-danger,
+        #insurance .btn-danger {
+            background: #e53e3e;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+            grid-template-columns: 1fr;
+            }
+            
+            .nav-tabs {
+            flex-wrap: wrap;
+            }
+            
+            .stats-grid {
+            grid-template-columns: 1fr;
+            }
+        }
+
+        
+        .login-container {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(102,126,234,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        .login-card {
+            background: #fff;
+            padding: 40px 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            min-width: 320px;
+        }
+        .login-card h2 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 24px;
+        }
+        .login-card .form-group {
+            margin-bottom: 18px;
+        }
+        
+        .login-card .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #4a5568;
+        }
+        svg {
+            position: fixed;
+            left: 50%;
+            bottom: 60px;
+            transform: translateX(-50%);
+            max-height: 300px;
+            max-width: 300px;
+            z-index: 100;
+            pointer-events: none;
+        }
+            /* no border */
+        
+        </style>
+</head>
+<body>
+
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container" style="display:none;">
+        <div class="login-card">
+            <h2>🏥 HMS Login</h2>
+            <form id="loginForm" autocomplete="on">
+                <div class="form-group">
+                    <label for="loginUsername">Username</label>
+                    <input type="text" id="loginUsername" name="username" required autocomplete="username" autofocus>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" name="password" required autocomplete="current-password">
+                </div>
+                <div class="form-group">
+                    <label for="loginUserRole">Role</label>
+                    <select id="loginUserRole" name="role" required>
+                        <option value="">Select Role</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Doctor">Doctor</option>
+                        <option value="Receptionist">Receptionist</option>
+                        <option value="Pharmacist">Pharmacist</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 20px;">Login</button>
+                <div id="loginError" style="color: #dc3545; margin-top: 12px; text-align: center; display: none;"></div>
+                <div id="loginAttempts" style="color: #dc3545; margin-top: 8px; text-align: center; display: none;"></div>
+            </form>
+            <script>
+                // Track login attempts in sessionStorage
+                if (typeof sessionStorage.loginAttempts === 'undefined') {
+                    sessionStorage.loginAttempts = 0;
+                }
+                const loginForm = document.getElementById('loginForm');
+                const loginError = document.getElementById('loginError');
+                const loginAttemptsDiv = document.getElementById('loginAttempts');
+
+                function updateLoginAttemptsUI() {
+                    const attempts = parseInt(sessionStorage.loginAttempts || '0');
+                    if (attempts > 0 && attempts < 3) {
+                        loginAttemptsDiv.style.display = '';
+                        loginAttemptsDiv.textContent = `Failed attempts: ${attempts} of 3`;
+                    } else {
+                        loginAttemptsDiv.style.display = 'none';
+                    }
+                }
+
+                // Patch login to handle attempts
+                const origLoginWithAttempts = typeof login === 'function' ? login : null;
+                login = function(event) {
+                    event.preventDefault();
+                    const attempts = parseInt(sessionStorage.loginAttempts || '0');
+                    if (attempts >= 3) {
+                        loginError.style.display = '';
+                        loginError.textContent = "Too many failed attempts. Please try again later.";
+                        loginForm.querySelectorAll('input,select,button').forEach(el => el.disabled = true);
+                        return;
+                    }
+                    // Patch showAlert to show error in loginError div only for login form
+                    if (origLoginWithAttempts) {
+                        const origShowAlert = typeof showAlert === 'function' ? showAlert : null;
+                        let errorShown = false;
+                        window.showAlert = function(msg, type) {
+                            if (type === 'error') {
+                                sessionStorage.loginAttempts = attempts + 1;
+                                loginError.style.display = '';
+                                loginError.textContent = "Login failed. Please check your credentials.";
+                                updateLoginAttemptsUI();
+                                if (attempts + 1 >= 3) {
+                                    loginError.textContent = "Too many failed attempts. Please try again later.";
+                                    loginForm.querySelectorAll('input,select,button').forEach(el => el.disabled = true);
+                                }
+                                errorShown = true;
+                            } else if (origShowAlert) {
+                                origShowAlert(msg, type);
+                            }
+                        };
+                        origLoginWithAttempts(event);
+                        // Restore showAlert
+                        window.showAlert = origShowAlert;
+                        // On success, reset attempts and hide error
+                        if (!errorShown) {
+                            sessionStorage.loginAttempts = 0;
+                            loginError.style.display = 'none';
+                            updateLoginAttemptsUI();
+                        }
+                    }
+                };
+                updateLoginAttemptsUI();
+            </script>
+        </div>
+    </div>
+            
+        </div>
+    </div>
+    
+    <script>
+    // Display or hide login screen
+    function showLoginScreen(show) {
+        const loginScreen = document.getElementById('loginScreen');
+        const container = document.querySelector('.container');
+        if (show) {
+            if (loginScreen) loginScreen.style.display = 'flex';
+            if (container) container.style.filter = 'blur(5px)';
+        } else {
+            if (loginScreen) loginScreen.style.display = 'none';
+            if (container) container.style.filter = '';
+        }
+    }
+
+    // Dummy users (demo purpose)
+    const demoUsers = [
+        { username: 'admin', password: 'admin123', role: 'Admin' },
+        { username: 'doctor', password: 'doctor123', role: 'Doctor' },
+        { username: 'reception', password: 'reception123', role: 'Receptionist' },
+        { username: 'pharma', password: 'pharma123', role: 'Pharmacist' }
+    ];
+
+    function login(event) {
+        event.preventDefault();
+
+        const username = document.getElementById('loginUsername').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        const role = document.getElementById('loginUserRole').value;
+
+        const user = demoUsers.find(u => 
+            u.username === username && 
+            u.password === password && 
+            u.role === role
+        );
+
+        if (user) {
+            localStorage.setItem('hmsLoggedInUser', JSON.stringify(user));
+            showAlert('Login successful!', 'success');
+
+            // Show loading screen
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = 'loadingOverlay';
+            loadingDiv.style = `
+                position: fixed;
+                top: 0; left: 0;
+                width: 100vw; height: 100vh;
+                background: rgba(102,126,234,0.18);
+                display: flex; align-items: center; justify-content: center;
+                z-index: 3000;
+            `;
+            loadingDiv.innerHTML = `
+                <div style="background:#fff;padding:40px 60px;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.15);display:flex;flex-direction:column;align-items:center;">
+                    <div style="font-size:2.5rem;margin-bottom:18px;">🏥</div>
+                    <div style="font-size:1.3rem;color:#667eea;margin-bottom:10px;">Loading Hospital Management System...</div>
+                    <div class="loader" style="margin-top:10px;">
+                        <div style="border:4px solid #f3f3f3;border-top:4px solid #667eea;border-radius:50%;width:36px;height:36px;animation:spin 1s linear infinite;"></div>
+                    </div>
+                </div>
+                <style>
+                    @keyframes spin {
+                        0% { transform: rotate(0deg);}
+                        100% { transform: rotate(360deg);}
+                    }
+                </style>
+            `;
+            document.body.appendChild(loadingDiv);
+
+            setTimeout(() => {
+                // Remove login form from DOM
+                const loginScreen = document.getElementById('loginScreen');
+                if (loginScreen) loginScreen.remove();
+
+                // Reset login form (safety)
+                const loginForm = document.getElementById('loginForm');
+                if (loginForm) loginForm.reset();
+
+                // Show main content
+                const container = document.querySelector('.container');
+                if (container) container.style.display = '';
+
+                // Navigate to dashboard tab
+                const navTab = document.querySelector('.nav-tab[onclick*="dashboard"]');
+                if (typeof showTab === 'function' && navTab) {
+                    showTab('dashboard', { target: navTab });
+                } else {
+                    console.warn('Missing showTab function or dashboard nav-tab.');
+                }
+
+                // Remove loading overlay
+                const loader = document.getElementById('loadingOverlay');
+                if (loader) loader.remove();
+
+            }, 900);
+
+        } else {
+            showAlert('Invalid credentials or role.', 'error');
+        }
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        const loginForm = document.getElementById('loginForm');
+        if (loginForm) loginForm.onsubmit = login;
+
+        const loggedInUser = localStorage.getItem('hmsLoggedInUser');
+        const container = document.querySelector('.container');
+
+        if (loggedInUser) {
+            showLoginScreen(false);
+            if (container) container.style.display = '';
+            const navTab = document.querySelector('.nav-tab[onclick*="dashboard"]');
+            if (typeof showTab === 'function' && navTab) {
+                showTab('dashboard', { target: navTab });
+            }
+            showAlert('Login successful!', 'success');
+        } else {
+            showLoginScreen(true);
+            if (container) container.style.display = '';
+        }
+    });
+</script>
+
+
+    <div class="container">
+        <div class="header">
+            <h1>🏥 Hospital Management System</h1>
+            <div class="nav-tabs">
+            <!-- Background image for the header -->
+            <style>
+                .header {
+                    background-image: url('https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?auto=format&fit=crop&w=800&q=80');
+                    background-size: cover;
+                    background-position: center;
+                    background-repeat: no-repeat;
+                    position: relative;
+                }
+                .header::before {
+                    content: "";
+                    position: absolute;
+                    top: 0; left: 0; right: 0; bottom: 0;
+                    background: rgba(165, 191, 248, 0.92);
+                    border-radius: 15px;
+                    z-index: 0;
+                }
+                .header > * {
+                    position: relative;
+                    z-index: 1;
+                }
+            </style>
+                </div>
+                <!-- Side Menu Start -->
+                <button id="toggleSideMenu" style="position:fixed;top:16px;left:16px;z-index:101;background:#667eea;color:#fff;border:none;border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+                    ☰
+                </button>
+                <div id="sideMenu" style="position:fixed;top:0;left:0;height:100vh;width:220px;background:rgba(255,255,255,0.97);backdrop-filter:blur(10px);box-shadow:2px 0 16px rgba(0,0,0,0.07);z-index:100;display:flex;flex-direction:column;align-items:stretch;padding-top:40px;transition:left 0.3s;">
+                    <div style="text-align:center;margin-bottom:30px;">
+                        <span style="font-size:2rem;">🏥</span>
+                        <div style="font-weight:bold;color:#667eea;font-size:1.2rem;">HMS</div>
+                    </div>
+                    <!-- User-level access: Tabs will be shown/hidden based on user role -->
+                    <script>
+                        // Hide/show side menu tabs based on logged-in user role
+                        function updateTabVisibilityByRole() {
+                            const user = JSON.parse(localStorage.getItem('hmsLoggedInUser') || '{}');
+                            const role = user.role || '';
+                            document.querySelectorAll('#sideMenu .nav-tab').forEach(tab => {
+                                const allowed = (tab.dataset.roles || '').split(',').map(r => r.trim());
+                                if (!role || !allowed.includes(role)) {
+                                    tab.style.display = 'none';
+                                } else {
+                                    tab.style.display = '';
+                                }
+                            });
+                        }
+                        // Call on login and page load
+                        document.addEventListener('DOMContentLoaded', updateTabVisibilityByRole);
+                        window.addEventListener('storage', updateTabVisibilityByRole);
+                    </script>
+                    <button class="nav-tab active" data-roles="Admin,Receptionist" onclick="showTab('dashboard', event)" style="margin:6px 16px;">Dashboard</button>
+                    <button class="nav-tab" data-roles="Admin,Doctor,Receptionist" onclick="showTab('patients', event)" style="margin:6px 16px;">Patients</button>
+                    <button class="nav-tab" data-roles="Admin,Doctor" onclick="showTab('doctors', event)" style="margin:6px 16px;">Doctors</button>
+                    <button class="nav-tab" data-roles="Admin,Doctor,Receptionist" onclick="showTab('appointments', event)" style="margin:6px 16px;">Appointments</button>
+                    <button class="nav-tab" data-roles="Admin,Doctor" onclick="showTab('laboratory', event)" style="margin:6px 16px;">Laboratory</button>
+                    <button class="nav-tab" data-roles="Admin,Pharmacist" onclick="showTab('pharmacy', event)" style="margin:6px 16px;">Pharmacy</button>
+                    <button class="nav-tab" data-roles="Admin,Doctor,Receptionist" onclick="showTab('beds', event)" style="margin:6px 16px;">Beds</button>
+                    <button class="nav-tab" data-roles="Admin" onclick="showTab('departments', event)" style="margin:6px 16px;">Departments</button>
+                    <button class="nav-tab" data-roles="Admin,Receptionist" onclick="showTab('billing', event)" style="margin:6px 16px;">Billing</button>
+                    <button class="nav-tab" data-roles="Admin" onclick="showTab('users', event)" style="margin:6px 16px;">Users</button>
+                    <button class="nav-tab" data-roles="Admin" onclick="showTab('assets', event)" style="margin:6px 16px;">Assets</button>
+                    <button class="nav-tab" data-roles="Admin,Doctor" onclick="showTab('staffSchedule', event)" style="margin:6px 16px;">Staff Schedule</button>
+                    <button class="nav-tab" data-roles="Admin" onclick="showTab('insurance', event)" style="margin:6px 16px;">Insurance</button>
+                    <button class="nav-tab" data-roles="Admin" onclick="showTab('reports', event)" style="margin:6px 16px;">Reports</button>
+                    <button class="nav-tab" data-roles="Admin" onclick="showTab('auditLogs', event)" style="margin:6px 16px;">Audit Logs</button>
+                    <button class="nav-tab" data-roles="Admin,Doctor,Receptionist,Pharmacist" onclick="logout()" style="margin:6px 16px;">Logout</button>
+                    
+                </div>
+                <script>
+                    // Collapsible Side Menu Logic
+                    const sideMenu = document.getElementById('sideMenu');
+                    const toggleBtn = document.getElementById('toggleSideMenu');
+                    let menuOpen = true;
+
+                    // Add transition for sliding effect
+                    sideMenu.style.transition = 'left 0.3s';
+
+                    // Animate menu tabs sliding left on close
+                    function setMenu(open) {
+                        menuOpen = open;
+                        if (open) {
+                            sideMenu.style.left = '0';
+                            toggleBtn.innerHTML = '✖';
+                            sideMenu.style.display = 'flex';
+                            // Reset tab slide
+                            sideMenu.querySelectorAll('.nav-tab').forEach(tab => {
+                                tab.style.transition = 'transform 0.3s';
+                                tab.style.transform = 'translateX(0)';
+                            });
+                        } else {
+                            sideMenu.style.left = '-220px';
+                            toggleBtn.innerHTML = '☰';
+                            // Slide tabs left
+                            sideMenu.querySelectorAll('.nav-tab').forEach((tab, i) => {
+                                tab.style.transition = 'transform 0.3s';
+                                tab.style.transform = 'translateX(-60px)';
+                            });
+                            // Hide after animation for accessibility
+                            setTimeout(() => {
+                                if (!menuOpen) sideMenu.style.display = 'none';
+                            }, 300);
+                        }
+                    }
+                            toggleBtn.innerHTML = '☰';
+                            // Hide after animation for accessibility
+                            setTimeout(() => {
+                                if (!menuOpen) sideMenu.style.display = 'none';
+                            }, 300);
+                        
+                    
+                    toggleBtn.onclick = function() {
+                        if (!menuOpen) {
+                            sideMenu.style.display = 'flex';
+                            // Allow display before sliding in
+                            setTimeout(() => setMenu(true), 10);
+                        } else {
+                            setMenu(false);
+                        }
+                    };
+                    
+                    // Responsive: auto-close on small screens after nav click
+                    sideMenu.querySelectorAll('.nav-tab').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            if (window.innerWidth < 900) setMenu(false);
+                        });
+                    });
+                    // On load, hide menu on small screens
+                    window.addEventListener('DOMContentLoaded', () => {
+                        if (window.innerWidth < 900) setMenu(false);
+                        else setMenu(true);
+                    });
+                    window.addEventListener('resize', () => {
+                        if (window.innerWidth < 900) setMenu(false);
+                        else setMenu(true);
+                    });
+                </script>
+                
+        
+                    
+
+        <div class="content">
+            <!-- Dashboard Tab -->
+            <div id="dashboard" class="tab-content active">
+                <h2>Dashboard Overview</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalPatients">0</div>
+                        <div class="stat-label">Total Patients</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalDoctors">0</div>
+                        <div class="stat-label">Total Doctors</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="todayAppointments">0</div>
+                        <div class="stat-label">Today's Appointments</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalRevenue">$0</div>
+                        <div class="stat-label">Total Revenue</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalAssets">$0</div>
+                        <div class="stat-label">Total Asset Value</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalBeds">0</div>
+                        <div class="stat-label">Total Beds</div>
+                    </div>
+                    </div>
+                </div>
+
+                
+                
+        
+        <!-- Patients Tab -->
+            <div id="patients" class="tab-content">
+                <div class="form-section">
+                    <h3>Add New Patient</h3>
+                    <form id="patientForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>First Name</label>
+                                <input type="text" id="patientFirstName" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Last Name</label>
+                                <input type="text" id="patientLastName" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Date of Birth</label>
+                                <input type="date" id="patientDOB" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Gender</label>
+                                <select id="patientGender" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Phone</label>
+                                <input type="tel" id="patientPhone" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" id="patientEmail">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Address</label>
+                                <textarea id="patientAddress" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Emergency Contact</label>
+                                <input type="tel" id="patientEmergencyContact">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Patient</button>
+                    </form>
+                </div>
+
+                <div class="search-box">
+                    <input type="text" id="patientSearch" placeholder="Search patients..." onkeyup="filterPatients()">
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Age</th>
+                                <th>Gender</th>
+                                <th>Phone</th>
+                                <th>Last Visit</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patientsTable">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Doctors Tab -->
+            <div id="doctors" class="tab-content">
+                <div class="form-section">
+                    <h3>Add New Doctor</h3>
+                    <form id="doctorForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>First Name</label>
+                                <input type="text" id="doctorFirstName" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Last Name</label>
+                                <input type="text" id="doctorLastName" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Specialization</label>
+                                <select id="doctorSpecialization" required>
+                                    <option value="">Select Specialization</option>
+                                    <option value="Cardiology">Cardiology</option>
+                                    <option value="Dermatology">Dermatology</option>
+                                    <option value="Emergency Medicine">Emergency Medicine</option>
+                                    <option value="Family Medicine">Family Medicine</option>
+                                    <option value="Internal Medicine">Internal Medicine</option>
+                                    <option value="Neurology">Neurology</option>
+                                    <option value="Oncology">Oncology</option>
+                                    <option value="Orthopedics">Orthopedics</option>
+                                    <option value="Pediatrics">Pediatrics</option>
+                                    <option value="Psychiatry">Psychiatry</option>
+                                    <option value="Radiology">Radiology</option>
+                                    <option value="Surgery">Surgery</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Phone</label>
+                                <input type="tel" id="doctorPhone" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" id="doctorEmail" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>License Number</label>
+                                <input type="text" id="doctorLicense" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Years of Experience</label>
+                                <input type="number" id="doctorExperience" min="0" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Doctor</button>
+                    </form>
+                </div>
+
+                <div class="search-box">
+                    <input type="text" id="doctorSearch" placeholder="Search doctors..." onkeyup="filterDoctors()">
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Specialization</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Experience</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="doctorsTable">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Appointments Tab -->
+            <div id="appointments" class="tab-content">
+                <div class="form-section">
+                    <h3>Schedule New Appointment</h3>
+                    <form id="appointmentForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Patient</label>
+                                <select id="appointmentPatient" required>
+                                    <option value="">Select Patient</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Doctor</label>
+                                <select id="appointmentDoctor" required>
+                                    <option value="">Select Doctor</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Date</label>
+                                <input type="date" id="appointmentDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Time</label>
+                                <input type="time" id="appointmentTime" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Appointment Type</label>
+                                <select id="appointmentType" required>
+                                    <option value="">Select Type</option>
+                                    <option value="Consultation">Consultation</option>
+                                    <option value="Follow-up">Follow-up</option>
+                                    <option value="Emergency">Emergency</option>
+                                    <option value="Surgery">Surgery</option>
+                                    <option value="Check-up">Check-up</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Duration (minutes)</label>
+                                <input type="number" id="appointmentDuration" value="30" min="15" max="180" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Notes</label>
+                                <textarea id="appointmentNotes" rows="3" placeholder="Additional notes..."></textarea>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Schedule Appointment</button>
+                    </form>
+                </div>
+
+                <div class="search-box">
+                    <input type="text" id="appointmentSearch" placeholder="Search appointments..." onkeyup="filterAppointments()">
+                </div>
+
+                <div id="appointmentsList">
+                </div>
+            </div>
+
+            <!-- Billing Tab -->
+            <div id="billing" class="tab-content">
+                <div class="form-section">
+                    <h3>Create New Bill</h3>
+                    <form id="billingForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Patient</label>
+                                <select id="billPatient" required>
+                                    <option value="">Select Patient</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Service Date</label>
+                                <input type="date" id="billDate" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Service Type</label>
+                                <select id="billService" required>
+                                    <option value="">Select Service</option>
+                                    <option value="Consultation">Consultation - $100</option>
+                                    <option value="Emergency">Emergency Visit - $300</option>
+                                    <option value="Surgery">Surgery - $2000</option>
+                                    <option value="X-Ray">X-Ray - $150</option>
+                                    <option value="Blood Test">Blood Test - $75</option>
+                                    <option value="MRI">MRI Scan - $800</option>
+                                    <option value="CT Scan">CT Scan - $600</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Amount ($)</label>
+                                <input type="number" id="billAmount" step="0.01" min="0" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Payment Status</label>
+                                <select id="billStatus" required>
+                                    <option value="Pending">Pending</option>
+                                    <option value="Paid">Paid</option>
+                                    <option value="Partial">Partial</option>
+                                    <option value="Overdue">Overdue</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea id="billDescription" rows="2" placeholder="Service description..."></textarea>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Create Bill</button>
+                    </form>
+                </div>
+
+                <div class="search-box">
+                    <input type="text" id="billSearch" placeholder="Search bills..." onkeyup="filterBills()">
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Bill ID</th>
+                                <th>Patient</th>
+                                <th>Service</th>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="billsTable">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        <!-- Pharmacy Tab -->
+        <div id="pharmacy" class="tab-content"></div>
+        <!-- Beds Tab -->
+        <div id="beds" class="tab-content"></div>
+        <!-- Laboratory Tab -->
+        <div id="laboratory" class="tab-content"></div>
+        <!-- Departments Tab -->
+        <div id="departments" class="tab-content"></div>
+        <!-- Users Tab -->
+        <div id="users" class="tab-content"></div>
+        <!-- Assets Tab -->
+        <div id="assets" class="tab-content"></div>
+        <!-- Staff Schedule Tab -->
+        <div id="staffSchedule" class="tab-content"></div>
+        <!-- Insurance Tab -->
+        <div id="insurance" class="tab-content"></div>
+        <!-- Reports Tab -->
+        <div id="reports" class="tab-content"></div>
+        <!-- Audit Logs Tab -->
+        <div id="auditLogs" class="tab-content"></div>
+        <!-- Login Tab -->
+        <div id="login" class="tab-content"></div>
+        </div>
+    </div>
+
+    <!-- Edit Patient Modal -->
+    <div id="editPatientModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('editPatientModal')">&times;</span>
+            <h3>Edit Patient</h3>
+            <form id="editPatientForm">
+                <input type="hidden" id="editPatientId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" id="editPatientFirstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" id="editPatientLastName" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="tel" id="editPatientPhone" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="editPatientEmail">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Update Patient</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+       
+// Declare all main data arrays at the top
+let patients = JSON.parse(localStorage.getItem('patients')) || [];
+let doctors = JSON.parse(localStorage.getItem('doctors')) || [];
+let appointments = JSON.parse(localStorage.getItem('appointments')) || [];
+let bills = JSON.parse(localStorage.getItem('bills')) || [];
+
+        // Provide default doctors if none exist
+        if (doctors.length === 0) {
+            doctors = [
+                {
+                    id: 1,
+                    firstName: 'Sarah',
+                    lastName: 'Johnson',
+                    specialization: 'Cardiology',
+                    phone: '555-0201',
+                    email: 'dr.sarah@hospital.com',
+                    license: 'MD12345',
+                    experience: 10
+                },
+                {
+                    id: 2,
+                    firstName: 'Michael',
+                    lastName: 'Brown',
+                    specialization: 'Pediatrics',
+                    phone: '555-0202',
+                    email: 'dr.michael@hospital.com',
+                    license: 'MD12346',
+                    experience: 8
+                }
+            ];
+        }
+            localStorage.setItem('bills', JSON.stringify(bills));
+        
+
+        // Tab functionality
+        function showTab(tabName, event) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(tab => tab.classList.remove('active'));
+
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            if (event && event.target) event.target.classList.add('active');
+
+            // Load data for the selected tab
+            switch(tabName) {
+                case 'dashboard':
+                    loadDashboard();
+                    break;
+                case 'patients':
+                    loadPatients();
+                    break;
+                case 'doctors':
+                    loadDoctors();
+                    break;
+                case 'appointments':
+                    loadAppointments();
+                    break;
+                case 'billing':
+                    loadBilling();
+                    break;
+                case 'pharmacy':
+                    loadPharmacy();
+                    break;
+                case 'beds':
+                    loadBeds();
+                    break;
+                case 'departments':
+                    loadDepartments();
+                    break;
+                case 'users':
+                    loadUsers();
+                    break;
+                case 'assets':
+                    loadAssets();
+                    break;
+                case 'staffSchedule':
+                    loadStaffSchedule();
+                    break;
+                case 'insurance':
+                    loadInsurance();
+                    break;
+                case 'reports':
+                    loadReports();
+                    break;
+                case 'auditLogs':
+                    loadAuditLogs();
+                    break;
+                case 'laboratory':
+                    loadLaboratory();
+                    break;
+                case 'login':
+                    loadLogin();
+                    break;
+            }
+        }
+
+        // Dashboard functions
+        function loadDashboard() {
+            document.getElementById('totalPatients').textContent = patients.length;
+
+            document.getElementById('totalDoctors').textContent = doctors.length;
+            
+            const today = new Date().toISOString().split('T')[0];
+            const todayAppts = appointments.filter(apt => apt.date === today);
+            document.getElementById('todayAppointments').textContent = todayAppts.length;
+            
+            const totalRevenue = bills.reduce((sum, bill) => sum + parseFloat(bill.amount || 0), 0);
+            document.getElementById('totalRevenue').textContent = `$${totalRevenue.toFixed(2)}`;
+
+            // Add beds and assets to dashboard if elements exist
+            if (document.getElementById('totalBeds')) {
+                document.getElementById('totalBeds').textContent = (typeof beds !== 'undefined') ? beds.length : 0;
+            }
+            if (document.getElementById('totalAssets')) {
+                const totalAssetValue = (typeof assets !== 'undefined')
+                    ? assets.reduce((sum, asset) => sum + parseFloat(asset.value || 0), 0)
+                    : 0;
+                document.getElementById('totalAssets').textContent = `$${totalAssetValue.toFixed(2)}`;
+            }
+        }
+
+        // Patient functions
+        function loadPatients() {
+            const tbody = document.getElementById('patientsTable');
+            tbody.innerHTML = '';
+
+            patients.forEach(patient => {
+                const age = calculateAge(patient.dob);
+                const row = `
+                    <tr>
+                        <td>${patient.id}</td>
+                        <td>${patient.firstName} ${patient.lastName}</td>
+                        <td>${age}</td>
+                        <td>${patient.gender}</td>
+                        <td>${patient.phone}</td>
+                        <td>${patient.lastVisit || 'N/A'}</td>
+                        <td>
+                            <button class="btn btn-secondary" onclick="editPatient(${patient.id})">Edit</button>
+                            <button class="btn btn-danger" onclick="deletePatient(${patient.id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+
+            // Update patient dropdowns
+            updatePatientDropdowns();
+        }
+
+        function calculateAge(dob) {
+            const today = new Date();
+            const birthDate = new Date(dob);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age;
+        }
+
+        function addPatient(event) {
+            event.preventDefault();
+            
+            const newPatient = {
+                id: patients.length > 0 ? Math.max(...patients.map(p => p.id)) + 1 : 1,
+                firstName: document.getElementById('patientFirstName').value,
+                lastName: document.getElementById('patientLastName').value,
+                dob: document.getElementById('patientDOB').value,
+                gender: document.getElementById('patientGender').value,
+                phone: document.getElementById('patientPhone').value,
+                email: document.getElementById('patientEmail').value,
+                address: document.getElementById('patientAddress').value,
+                emergencyContact: document.getElementById('patientEmergencyContact').value,
+                lastVisit: null
+            };
+
+            patients.push(newPatient);
+            saveData();
+            loadPatients();
+            document.getElementById('patientForm').reset();
+            showAlert('Patient added successfully!', 'success');
+        }
+
+        function editPatient(id) {
+            const patient = patients.find(p => p.id === id);
+            if (patient) {
+                document.getElementById('editPatientId').value = patient.id;
+                document.getElementById('editPatientFirstName').value = patient.firstName;
+                document.getElementById('editPatientLastName').value = patient.lastName;
+                document.getElementById('editPatientPhone').value = patient.phone;
+                document.getElementById('editPatientEmail').value = patient.email;
+                document.getElementById('editPatientModal').style.display = 'block';
+            }
+        }
+
+        function updatePatient(event) {
+            event.preventDefault();
+            
+            const id = parseInt(document.getElementById('editPatientId').value);
+            const patientIndex = patients.findIndex(p => p.id === id);
+            
+            if (patientIndex !== -1) {
+                patients[patientIndex].firstName = document.getElementById('editPatientFirstName').value;
+                patients[patientIndex].lastName = document.getElementById('editPatientLastName').value;
+                patients[patientIndex].phone = document.getElementById('editPatientPhone').value;
+                patients[patientIndex].email = document.getElementById('editPatientEmail').value;
+                
+                saveData();
+                loadPatients();
+                closeModal('editPatientModal');
+                showAlert('Patient updated successfully!', 'success');
+            }
+        }
+
+        function deletePatient(id) {
+            if (confirm('Are you sure you want to delete this patient?')) {
+                patients = patients.filter(p => p.id !== id);
+                saveData();
+                loadPatients();
+                showAlert('Patient deleted successfully!', 'success');
+            }
+        }
+
+        function filterPatients() {
+            const searchTerm = document.getElementById('patientSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#patientsTable tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        // Doctor functions
+        function loadDoctors() {
+            const tbody = document.getElementById('doctorsTable');
+            tbody.innerHTML = '';
+
+            doctors.forEach(doctor => {
+                const row = `
+                    <tr>
+                        <td>${doctor.id}</td>
+                        <td>Dr. ${doctor.firstName} ${doctor.lastName}</td>
+                        <td>${doctor.specialization}</td>
+                        <td>${doctor.phone}</td>
+                        <td>${doctor.email}</td>
+                        <td>${doctor.experience} years</td>
+                        <td>
+                            <button class="btn btn-secondary" onclick="editDoctor(${doctor.id})">Edit</button>
+                            <button class="btn btn-danger" onclick="deleteDoctor(${doctor.id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+
+            // Update doctor dropdowns
+            updateDoctorDropdowns();
+        }
+
+        function addDoctor(event) {
+            event.preventDefault();
+            
+            const newDoctor = {
+                id: doctors.length > 0 ? Math.max(...doctors.map(d => d.id)) + 1 : 1,
+                firstName: document.getElementById('doctorFirstName').value,
+                lastName: document.getElementById('doctorLastName').value,
+                specialization: document.getElementById('doctorSpecialization').value,
+                phone: document.getElementById('doctorPhone').value,
+                email: document.getElementById('doctorEmail').value,
+                license: document.getElementById('doctorLicense').value,
+                experience: parseInt(document.getElementById('doctorExperience').value)
+            };
+
+            doctors.push(newDoctor);
+            saveData();
+            loadDoctors();
+            document.getElementById('doctorForm').reset();
+            showAlert('Doctor added successfully!', 'success');
+        }
+
+        function deleteDoctor(id) {
+            if (confirm('Are you sure you want to delete this doctor?')) {
+                doctors = doctors.filter(d => d.id !== id);
+                saveData();
+                loadDoctors();
+                showAlert('Doctor deleted successfully!', 'success');
+            }
+        }
+
+        function filterDoctors() {
+            const searchTerm = document.getElementById('doctorSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#doctorsTable tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        // Appointment functions
+        function loadAppointments() {
+            const container = document.getElementById('appointmentsList');
+            container.innerHTML = '';
+
+            if (appointments.length === 0) {
+                container.innerHTML = '<p>No appointments scheduled.</p>';
+                return;
+            }
+
+            appointments.sort((a, b) => new Date(a.date + ' ' + a.time) - new Date(b.date + ' ' + b.time));
+
+            appointments.forEach(appointment => {
+                const patient = patients.find(p => p.id === appointment.patientId);
+                const doctor = doctors.find(d => d.id === appointment.doctorId);
+                
+                const card = `
+                    <div class="appointment-card">
+                        <div class="appointment-time">${formatDate(appointment.date)} at ${formatTime(appointment.time)}</div>
+                        <div class="appointment-patient">${patient ? patient.firstName + ' ' + patient.lastName : 'Unknown Patient'} - ${appointment.type}</div>
+                        <div class="appointment-doctor">Dr. ${doctor ? doctor.firstName + ' ' + doctor.lastName : 'Unknown Doctor'}</div>
+                        <div style="margin-top: 10px;">
+                            <span class="status-badge status-${appointment.status.toLowerCase()}">${appointment.status}</span>
+                            <div style="float: right;">
+                                <button class="btn btn-secondary" onclick="updateAppointmentStatus(${appointment.id}, 'Completed')">Complete</button>
+                                <button class="btn btn-danger" onclick="cancelAppointment(${appointment.id})">Cancel</button>
+                            </div>
+                        </div>
+                        ${appointment.notes ? '<div style="margin-top: 10px; font-style: italic;">Notes: ' + appointment.notes + '</div>' : ''}
+                    </div>
+                `;
+                container.innerHTML += card;
+            });
+        }
+
+        function addAppointment(event) {
+            event.preventDefault();
+            
+            const newAppointment = {
+                id: appointments.length > 0 ? Math.max(...appointments.map(a => a.id)) + 1 : 1,
+                patientId: parseInt(document.getElementById('appointmentPatient').value),
+                doctorId: parseInt(document.getElementById('appointmentDoctor').value),
+                date: document.getElementById('appointmentDate').value,
+                time: document.getElementById('appointmentTime').value,
+                type: document.getElementById('appointmentType').value,
+                duration: parseInt(document.getElementById('appointmentDuration').value),
+                notes: document.getElementById('appointmentNotes').value,
+                status: 'Scheduled'
+            };
+
+            appointments.push(newAppointment);
+            saveData();
+            loadAppointments();
+            document.getElementById('appointmentForm').reset();
+            showAlert('Appointment scheduled successfully!', 'success');
+        }
+
+        function updateAppointmentStatus(id, status) {
+            const appointment = appointments.find(a => a.id === id);
+            if (appointment) {
+                appointment.status = status;
+                saveData();
+                loadAppointments();
+                showAlert(`Appointment ${status.toLowerCase()} successfully!`, 'success');
+            }
+        }
+
+        function cancelAppointment(id) {
+            if (confirm('Are you sure you want to cancel this appointment?')) {
+                updateAppointmentStatus(id, 'Cancelled');
+            }
+        }
+
+        function filterAppointments() {
+            const searchTerm = document.getElementById('appointmentSearch').value.toLowerCase();
+            const cards = document.querySelectorAll('.appointment-card');
+            
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        // Billing functions
+        function loadBilling() {
+            const tbody = document.getElementById('billsTable');
+            tbody.innerHTML = '';
+
+            bills.forEach(bill => {
+                const patient = patients.find(p => p.id === bill.patientId);
+                const row = `
+                    <tr>
+                        <td>#${bill.id}</td>
+                        <td>${patient ? patient.firstName + ' ' + patient.lastName : 'Unknown Patient'}</td>
+                        <td>${bill.service}</td>
+                        <td>${formatDate(bill.date)}</td>
+                        <td>${parseFloat(bill.amount).toFixed(2)}</td>
+                        <td><span class="status-badge status-${bill.status.toLowerCase()}">${bill.status}</span></td>
+                        <td>
+                            <button class="btn btn-secondary" onclick="updateBillStatus(${bill.id})">Update Status</button>
+                            <button class="btn btn-danger" onclick="deleteBill(${bill.id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function addBill(event) {
+            event.preventDefault();
+            
+            const newBill = {
+                id: bills.length > 0 ? Math.max(...bills.map(b => b.id)) + 1 : 1,
+                patientId: parseInt(document.getElementById('billPatient').value),
+                date: document.getElementById('billDate').value,
+                service: document.getElementById('billService').value,
+                amount: parseFloat(document.getElementById('billAmount').value),
+                status: document.getElementById('billStatus').value,
+                description: document.getElementById('billDescription').value
+            };
+
+            bills.push(newBill);
+            saveData();
+            loadBilling();
+            document.getElementById('billingForm').reset();
+            showAlert('Bill created successfully!', 'success');
+        }
+
+        function updateBillStatus(id) {
+            const bill = bills.find(b => b.id === id);
+            if (bill) {
+                const newStatus = prompt('Enter new status (Pending, Paid, Partial, Overdue):', bill.status);
+                if (newStatus && ['Pending', 'Paid', 'Partial', 'Overdue'].includes(newStatus)) {
+                    bill.status = newStatus;
+                    saveData();
+                    loadBilling();
+                    showAlert('Bill status updated successfully!', 'success');
+                }
+            }
+        }
+
+        function deleteBill(id) {
+            if (confirm('Are you sure you want to delete this bill?')) {
+                bills = bills.filter(b => b.id !== id);
+                saveData();
+                loadBilling();
+                showAlert('Bill deleted successfully!', 'success');
+            }
+        }
+
+        function filterBills() {
+            const searchTerm = document.getElementById('billSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#billsTable tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        // Utility functions
+        function updatePatientDropdowns() {
+            const selects = ['appointmentPatient', 'billPatient'];
+            selects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                const currentValue = select.value;
+                select.innerHTML = '<option value="">Select Patient</option>';
+                
+                patients.forEach(patient => {
+                    const option = document.createElement('option');
+                    option.value = patient.id;
+                    option.textContent = `${patient.firstName} ${patient.lastName}`;
+                    if (patient.id == currentValue) option.selected = true;
+                    select.appendChild(option);
+                });
+            });
+        }
+
+        function updateDoctorDropdowns() {
+            const select = document.getElementById('appointmentDoctor');
+            const currentValue = select.value;
+            select.innerHTML = '<option value="">Select Doctor</option>';
+            
+            doctors.forEach(doctor => {
+                const option = document.createElement('option');
+                option.value = doctor.id;
+                option.textContent = `Dr. ${doctor.firstName} ${doctor.lastName} (${doctor.specialization})`;
+                if (doctor.id == currentValue) option.selected = true;
+                select.appendChild(option);
+            });
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+
+        function formatTime(timeString) {
+            const [hours, minutes] = timeString.split(':');
+            const hour12 = hours % 12 || 12;
+            const ampm = hours < 12 ? 'AM' : 'PM';
+            return `${hour12}:${minutes} ${ampm}`;
+        }
+
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            
+            const container = document.querySelector('.content');
+            container.insertBefore(alertDiv, container.firstChild);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Auto-fill bill amount based on service
+        document.getElementById('billService').addEventListener('change', function() {
+            const service = this.value;
+            const amountField = document.getElementById('billAmount');
+            
+            const serviceAmounts = {
+                'Consultation': 100,
+                'Emergency': 300,
+                'Surgery': 2000,
+                'X-Ray': 150,
+                'Blood Test': 75,
+                'MRI': 800,
+                'CT Scan': 600
+            };
+            
+            if (serviceAmounts[service]) {
+                amountField.value = serviceAmounts[service];
+            }
+        });
+
+        // Set minimum date for appointments to today
+        document.getElementById('appointmentDate').min = new Date().toISOString().split('T')[0];
+        document.getElementById('billDate').max = new Date().toISOString().split('T')[0];
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            const patientForm = document.getElementById('patientForm');
+            if (patientForm) patientForm.addEventListener('submit', addPatient);
+
+            const doctorForm = document.getElementById('doctorForm');
+            if (doctorForm) doctorForm.addEventListener('submit', addDoctor);
+
+            const appointmentForm = document.getElementById('appointmentForm');
+            if (appointmentForm) appointmentForm.addEventListener('submit', addAppointment);
+
+            const billingForm = document.getElementById('billingForm');
+            if (billingForm) billingForm.addEventListener('submit', addBill);
+
+            const editPatientForm = document.getElementById('editPatientForm');
+            if (editPatientForm) editPatientForm.addEventListener('submit', updatePatient);
+
+            // Pharmacy 
+            const pharmacyForm = document.getElementById('pharmacyForm');
+            if (pharmacyForm) pharmacyForm.addEventListener('submit', addDrug);
+
+            // Beds 
+            const bedForm = document.getElementById('bedForm');
+            if (bedForm) bedForm.addEventListener('submit', addBed);
+
+            // Departments 
+            const departmentForm = document.getElementById('departmentForm');
+            if (departmentForm) departmentForm.addEventListener('submit', addDepartment);
+
+            // Users 
+            const userForm = document.getElementById('userForm');
+            if (userForm) userForm.addEventListener('submit', addUser);
+
+            // Assets 
+            const assetForm = document.getElementById('assetForm');
+            if (assetForm) assetForm.addEventListener('submit', addAsset);
+
+            // Staff Schedule 
+            const scheduleForm = document.getElementById('scheduleForm');
+            if (scheduleForm) scheduleForm.addEventListener('submit', addSchedule);
+
+            // Insurance 
+            const insuranceForm = document.getElementById('insuranceForm');
+            if (insuranceForm) insuranceForm.addEventListener('submit', addInsurance);
+        });
+        
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboard();
+            loadPatients();
+            loadDoctors();
+            loadAppointments();
+            loadBilling();
+            loadPharmacy();
+            loadBeds();
+            loadDepartments();
+            loadUsers();
+            loadAssets();
+            loadStaffSchedule();
+            loadInsurance();
+            loadReports();
+            loadAuditLogs();
+            loadLaboratory();
+        });
+            loadAuditLogs();
+        };
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('patients', JSON.stringify(patients));
+            localStorage.setItem('doctors', JSON.stringify(doctors));
+            localStorage.setItem('appointments', JSON.stringify(appointments));
+            localStorage.setItem('bills', JSON.stringify(bills));
+            localStorage.setItem('pharmacyDrugs', JSON.stringify(pharmacyDrugs));
+            localStorage.setItem('beds', JSON.stringify(beds));
+            localStorage.setItem('departments', JSON.stringify(departments));
+            localStorage.setItem('users', JSON.stringify(users));
+            localStorage.setItem('assets', JSON.stringify(assets));
+            localStorage.setItem('staffSchedules', JSON.stringify(staffSchedules));
+            localStorage.setItem('insurances', JSON.stringify(insurances));
+        }
+
+        // Pharmacy 
+                    let pharmacyDrugs = JSON.parse(localStorage.getItem('pharmacyDrugs')) || [];
+                    function savePharmacyDrugs() {
+                        localStorage.setItem('pharmacyDrugs', JSON.stringify(pharmacyDrugs));
+                    }
+                    function loadPharmacy() {
+                        const phDiv = document.getElementById('pharmacy');
+                        phDiv.innerHTML = `
+                            <h2>💊 Pharmacy </h2>
+                            <div class="form-section">
+                                <h3>Add Drug</h3>
+                                <form id="pharmacyForm">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Drug Name</label>
+                                            <input type="text" id="drugName" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Stock</label>
+                                            <input type="number" id="drugStock" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Price ($)</label>
+                                            <input type="number" id="drugPrice" step="0.01" required>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Add Drug</button>
+                                </form>
+                            </div>
+                            <div class="table-container">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Stock</th>
+                                            <th>Price</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="pharmacyTable"></tbody>
+                                </table>
+                            </div>
+                        `;
+                        document.getElementById('pharmacyForm').onsubmit = addDrug;
+                        renderPharmacyDrugs();
+                    }
+                    function addDrug(e) {
+                        e.preventDefault();
+                        const newDrug = {
+                            id: pharmacyDrugs.length > 0 ? Math.max(...pharmacyDrugs.map(d => d.id)) + 1 : 1,
+                            name: document.getElementById('drugName').value,
+                            stock: parseInt(document.getElementById('drugStock').value),
+                            price: parseFloat(document.getElementById('drugPrice').value)
+                        };
+                        pharmacyDrugs.push(newDrug);
+                        savePharmacyDrugs();
+                        renderPharmacyDrugs();
+                        e.target.reset();
+                    }
+                    function renderPharmacyDrugs() {
+                        const tbody = document.getElementById('pharmacyTable');
+                        if (!tbody) return;
+                        tbody.innerHTML = '';
+                        pharmacyDrugs.forEach(drug => {
+                            tbody.innerHTML += `
+                                <tr>
+                                    <td>${drug.id}</td>
+                                    <td>${drug.name}</td>
+                                    <td>${drug.stock}</td>
+                                    <td>$${drug.price.toFixed(2)}</td>
+                                    <td>
+                                        <button class="btn btn-danger" onclick="deleteDrug(${drug.id})">Delete</button>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                    }
+                    function deleteDrug(id) {
+                        pharmacyDrugs = pharmacyDrugs.filter(d => d.id !== id);
+                        savePharmacyDrugs();
+                        renderPharmacyDrugs();
+                    }
+                    window.deleteDrug = deleteDrug;
+
+                    // Beds 
+                    let beds = JSON.parse(localStorage.getItem('beds')) || [];
+                    function saveBeds() {
+                        localStorage.setItem('beds', JSON.stringify(beds));
+                    }
+                    function loadBeds() {
+                        const bedsDiv = document.getElementById('beds');
+                        bedsDiv.innerHTML = `
+                            <h2>🛏️ Beds </h2>
+                            <div class="form-section">
+                                <h3>Add Bed</h3>
+                                <form id="bedForm">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Bed Number</label>
+                                            <input type="text" id="bedNumber" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Status</label>
+                                            <select id="bedStatus" required>
+                                                <option value="Available">Available</option>
+                                                <option value="Occupied">Occupied</option>
+                                                <option value="Maintenance">Maintenance</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Add Bed</button>
+                                </form>
+                            </div>
+                            <div class="table-container">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Bed Number</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bedsTable"></tbody>
+                                </table>
+                            </div>
+                        `;
+                        document.getElementById('bedForm').onsubmit = addBed;
+                        renderBeds();
+                    }
+                    function addBed(e) {
+                        e.preventDefault();
+                        const newBed = {
+                            id: beds.length > 0 ? Math.max(...beds.map(b => b.id)) + 1 : 1,
+                            bedNumber: document.getElementById('bedNumber').value,
+                            status: document.getElementById('bedStatus').value
+                        };
+                        beds.push(newBed);
+                        saveBeds();
+                        renderBeds();
+                        e.target.reset();
+                    }
+                    function renderBeds() {
+                        const tbody = document.getElementById('bedsTable');
+                        if (!tbody) return;
+                        tbody.innerHTML = '';
+                        beds.forEach(bed => {
+                            tbody.innerHTML += `
+                                <tr>
+                                    <td>${bed.id}</td>
+                                    <td>${bed.bedNumber}</td>
+                                    <td>${bed.status}</td>
+                                    <td>
+                                        <button class="btn btn-danger" onclick="deleteBed(${bed.id})">Delete</button>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                    }
+                    function deleteBed(id) {
+                        beds = beds.filter(b => b.id !== id);
+                        saveBeds();
+                        renderBeds();
+                    }
+                    window.deleteBed = deleteBed;
+
+                    // Departments 
+                    let departments = JSON.parse(localStorage.getItem('departments')) || [];
+                    function saveDepartments() {
+                        localStorage.setItem('departments', JSON.stringify(departments));
+                    }
+                    function loadDepartments() {
+                        const depDiv = document.getElementById('departments');
+                        depDiv.innerHTML = `
+                            <h2>🏢 Departments </h2>
+                            <div class="form-section">
+                                <h3>Add Department</h3>
+                                <form id="departmentForm">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Name</label>
+                                            <input type="text" id="departmentName" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Head</label>
+                                            <input type="text" id="departmentHead" required>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Add Department</button>
+                                </form>
+                            </div>
+                            <div class="table-container">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Head</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="departmentsTable"></tbody>
+                                </table>
+                            </div>
+                        `;
+                        document.getElementById('departmentForm').onsubmit = addDepartment;
+                        renderDepartments();
+                    }
+                    function addDepartment(e) {
+                        e.preventDefault();
+                        const newDepartment = {
+                            id: departments.length > 0 ? Math.max(...departments.map(d => d.id)) + 1 : 1,
+                            name: document.getElementById('departmentName').value,
+                            head: document.getElementById('departmentHead').value
+                        };
+                        departments.push(newDepartment);
+                        saveDepartments();
+                        renderDepartments();
+                        e.target.reset();
+                    }
+                    function renderDepartments() {
+                        const tbody = document.getElementById('departmentsTable');
+                        if (!tbody) return;
+                        tbody.innerHTML = '';
+                        departments.forEach(dep => {
+                            tbody.innerHTML += `
+                                <tr>
+                                    <td>${dep.id}</td>
+                                    <td>${dep.name}</td>
+                                    <td>${dep.head}</td>
+                                    <td>
+                                        <button class="btn btn-danger" onclick="deleteDepartment(${dep.id})">Delete</button>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                    }
+                    function deleteDepartment(id) {
+                        departments = departments.filter(d => d.id !== id);
+                        saveDepartments();
+                        renderDepartments();
+                    }
+                    window.deleteDepartment = deleteDepartment;
+
+                    // Users 
+                    let users = JSON.parse(localStorage.getItem('users')) || [];
+                    function saveUsers() {
+                        localStorage.setItem('users', JSON.stringify(users));
+                    }
+                    function loadUsers() {
+                        const usersDiv = document.getElementById('users');
+                        usersDiv.innerHTML = `
+                            <h2>👤 Users </h2>
+                            <div class="form-section">
+                                <h3>Add User</h3>
+                                <form id="userForm">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Username</label>
+                                            <input type="text" id="username" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Role</label>
+                                            <select id="userRole" required>
+                                                <option value="Admin">Admin</option>
+                                                <option value="Doctor">Doctor</option>
+                                                <option value="Nurse">Nurse</option>
+                                                <option value="Receptionist">Receptionist</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Add User</button>
+                                </form>
+                            </div>
+                            <div class="table-container">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Username</th>
+                                            <th>Role</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="usersTable"></tbody>
+                                </table>
+                            </div>
+                        `;
+                        document.getElementById('userForm').onsubmit = addUser;
+                        renderUsers();
+                    }
+                    function addUser(e) {
+                        e.preventDefault();
+                        const newUser = {
+                            id: users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1,
+                            username: document.getElementById('username').value,
+                            role: document.getElementById('userRole').value
+                        };
+                        users.push(newUser);
+                        saveUsers();
+                        renderUsers();
+                        e.target.reset();
+                    }
+                    function renderUsers() {
+                        const tbody = document.getElementById('usersTable');
+                        if (!tbody) return;
+                        tbody.innerHTML = '';
+                        users.forEach(user => {
+                            tbody.innerHTML += `
+                                <tr>
+                                    <td>${user.id}</td>
+                                    <td>${user.username}</td>
+                                    <td>${user.role}</td>
+                                    <td>
+                                        <button class="btn btn-danger" onclick="deleteUser(${user.id})">Delete</button>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                    }
+                    function deleteUser(id) {
+                        users = users.filter(u => u.id !== id);
+                        saveUsers();
+                        renderUsers();
+                    }
+                    window.deleteUser = deleteUser;
+
+                    // Assets 
+                    let assets = JSON.parse(localStorage.getItem('assets')) || [];
+                    function saveAssets() {
+                        localStorage.setItem('assets', JSON.stringify(assets));
+                    }
+                    function loadAssets() {
+                        const assetsDiv = document.getElementById('assets');
+                        assetsDiv.innerHTML = `
+                            <h2>📦 Assets </h2>
+                            <div class="form-section">
+                                <h3>Add Asset</h3>
+                                <form id="assetForm">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Name</label>
+                                            <input type="text" id="assetName" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Value ($)</label>
+                                            <input type="number" id="assetValue" step="0.01" required>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Add Asset</button>
+                                </form>
+                            </div>
+                            <div class="table-container">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Value</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="assetsTable"></tbody>
+                                </table>
+                            </div>
+                        `;
+                        document.getElementById('assetForm').onsubmit = addAsset;
+                        renderAssets();
+                    }
+                    function addAsset(e) {
+                        e.preventDefault();
+                        const newAsset = {
+                            id: assets.length > 0 ? Math.max(...assets.map(a => a.id)) + 1 : 1,
+                            name: document.getElementById('assetName').value,
+                            value: parseFloat(document.getElementById('assetValue').value)
+                        };
+                        assets.push(newAsset);
+                        saveAssets();
+                        renderAssets();
+                        e.target.reset();
+                    }
+                    function renderAssets() {
+                        const tbody = document.getElementById('assetsTable');
+                        if (!tbody) return;
+                        tbody.innerHTML = '';
+                        assets.forEach(asset => {
+                            tbody.innerHTML += `
+                                <tr>
+                                    <td>${asset.id}</td>
+                                    <td>${asset.name}</td>
+                                    <td>$${asset.value.toFixed(2)}</td>
+                                    <td>
+                                        <button class="btn btn-danger" onclick="deleteAsset(${asset.id})">Delete</button>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                    }
+                    function deleteAsset(id) {
+                        assets = assets.filter(a => a.id !== id);
+                        saveAssets();
+                        renderAssets();
+                    }
+                    window.deleteAsset = deleteAsset;
+
+                    // Staff Schedule 
+                    let staffSchedules = JSON.parse(localStorage.getItem('staffSchedules')) || [];
+                    function saveStaffSchedules() {
+                        localStorage.setItem('staffSchedules', JSON.stringify(staffSchedules));
+                    }
+                    function loadStaffSchedule() {
+                        const schedDiv = document.getElementById('staffSchedule');
+                        schedDiv.innerHTML = `
+                            <h2>📅 Staff Schedule </h2>
+                            <div class="form-section">
+                                <h3>Add Schedule</h3>
+                                <form id="scheduleForm">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Staff Name</label>
+                                            <input type="text" id="scheduleStaff" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Date</label>
+                                            <input type="date" id="scheduleDate" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Shift</label>
+                                            <select id="scheduleShift" required>
+                                                <option value="Morning">Morning</option>
+                                                <option value="Afternoon">Afternoon</option>
+                                                <option value="Night">Night</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Add Schedule</button>
+                                </form>
+                            </div>
+                            <div class="table-container">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Staff</th>
+                                            <th>Date</th>
+                                            <th>Shift</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="staffSchedulesTable"></tbody>
+                                </table>
+                            </div>
+                        `;
+                        document.getElementById('scheduleForm').onsubmit = addSchedule;
+                        renderStaffSchedules();
+                    }
+                    function addSchedule(e) {
+                        e.preventDefault();
+                        const newSchedule = {
+                            id: staffSchedules.length > 0 ? Math.max(...staffSchedules.map(s => s.id)) + 1 : 1,
+                            staff: document.getElementById('scheduleStaff').value,
+                            date: document.getElementById('scheduleDate').value,
+                            shift: document.getElementById('scheduleShift').value
+                        };
+                        staffSchedules.push(newSchedule);
+                        saveStaffSchedules();
+                        renderStaffSchedules();
+                        e.target.reset();
+                    }
+                    function renderStaffSchedules() {
+                        const tbody = document.getElementById('staffSchedulesTable');
+                        if (!tbody) return;
+                        tbody.innerHTML = '';
+                        staffSchedules.forEach(sch => {
+                            tbody.innerHTML += `
+                                <tr>
+                                    <td>${sch.id}</td>
+                                    <td>${sch.staff}</td>
+                                    <td>${sch.date}</td>
+                                    <td>${sch.shift}</td>
+                                    <td>
+                                        <button class="btn btn-danger" onclick="deleteSchedule(${sch.id})">Delete</button>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                    }
+                    function deleteSchedule(id) {
+                        staffSchedules = staffSchedules.filter(s => s.id !== id);
+                        saveStaffSchedules();
+                        renderStaffSchedules();
+                    }
+                    window.deleteSchedule = deleteSchedule;
+
+                    // Insurance 
+                    let insurances = JSON.parse(localStorage.getItem('insurances')) || [];
+                    function saveInsurances() {
+                        localStorage.setItem('insurances', JSON.stringify(insurances));
+                    }
+                    function loadInsurance() {
+                        const insDiv = document.getElementById('insurance');
+                        insDiv.innerHTML = `
+                            <h2>🛡️ Insurance </h2>
+                            <div class="form-section">
+                                <h3>Add Insurance</h3>
+                                <form id="insuranceForm">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Provider</label>
+                                            <input type="text" id="insuranceProvider" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Policy Number</label>
+                                            <input type="text" id="insurancePolicy" required>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Add Insurance</button>
+                                </form>
+                            </div>
+                            <div class="table-container">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Provider</th>
+                                            <th>Policy Number</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="insurancesTable"></tbody>
+                                </table>
+                            </div>
+                        `;
+                        document.getElementById('insuranceForm').onsubmit = addInsurance;
+                        renderInsurances();
+                    }
+                    function addInsurance(e) {
+                        e.preventDefault();
+                        const newInsurance = {
+                            id: insurances.length > 0 ? Math.max(...insurances.map(i => i.id)) + 1 : 1,
+                            provider: document.getElementById('insuranceProvider').value,
+                            policy: document.getElementById('insurancePolicy').value
+                        };
+                        insurances.push(newInsurance);
+                        saveInsurances();
+                        renderInsurances();
+                        e.target.reset();
+                    }
+                    function renderInsurances() {
+                        const tbody = document.getElementById('insurancesTable');
+                        if (!tbody) return;
+                        tbody.innerHTML = '';
+                        insurances.forEach(ins => {
+                            tbody.innerHTML += `
+                                <tr>
+                                    <td>${ins.id}</td>
+                                    <td>${ins.provider}</td>
+                                    <td>${ins.policy}</td>
+                                    <td>
+                                        <button class="btn btn-danger" onclick="deleteInsurance(${ins.id})">Delete</button>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                    }
+                    function deleteInsurance(id) {
+                        insurances = insurances.filter(i => i.id !== id);
+                        saveInsurances();
+                        renderInsurances();
+                    }
+                    window.deleteInsurance = deleteInsurance;
+
+                    // Reports  (stub)
+                    function loadReports() {
+                        const repDiv = document.getElementById('reports');
+                        repDiv.innerHTML = `
+                            <h2>📊 Reports </h2>
+                            <div class="form-section">
+                                <h3>Generate Patient Report</h3>
+                                <form id="reportForm">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Patient</label>
+                                            <select id="reportPatient" required>
+                                                <option value="">Select Patient</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Report Type</label>
+                                            <select id="reportType" required>
+                                                <option value="">Select Report</option>
+                                                <option value="bills">Bills</option>
+                                                <option value="receipts">Payment Receipts</option>
+                                                <option value="lab">Lab Test Results</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Generate Report</button>
+                                    <!-- Print/Download buttons will be dynamically inserted after report is generated -->
+                                </form>
+                            </div>
+                            <div id="reportResult" style="margin-top:30px;"></div>
+                        `;
+
+                        // Populate patient dropdown
+                        const select = document.getElementById('reportPatient');
+                        select.innerHTML = '<option value="">Select Patient</option>';
+                        patients.forEach(patient => {
+                            const option = document.createElement('option');
+                            option.value = patient.id;
+                            option.textContent = `${patient.firstName} ${patient.lastName}`;
+                            select.appendChild(option);
+                        });
+
+                        document.getElementById('reportForm').onsubmit = function(e) {
+                            e.preventDefault();
+                            const patientId = parseInt(document.getElementById('reportPatient').value);
+                            const reportType = document.getElementById('reportType').value;
+                            const patient = patients.find(p => p.id === patientId);
+                            let html = '';
+
+                            if (!patient) {
+                                document.getElementById('reportResult').innerHTML = '<div class="alert alert-error">Patient not found.</div>';
+                                return;
+                            }
+
+                            if (reportType === 'bills') {
+                                const patientBills = bills.filter(b => b.patientId === patientId);
+                                if (patientBills.length === 0) {
+                                    html = '<div class="alert alert-error">No bills found for this patient.</div>';
+                                } else {
+                                    html = `
+                                        <h4>Bills for ${patient.firstName} ${patient.lastName}</h4>
+                                        <div class="table-container">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Bill ID</th>
+                                                        <th>Service</th>
+                                                        <th>Date</th>
+                                                        <th>Amount</th>
+                                                        <th>Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    ${patientBills.map(bill => `
+                                                        <tr>
+                                                            <td>#${bill.id}</td>
+                                                            <td>${bill.service}</td>
+                                                            <td>${formatDate(bill.date)}</td>
+                                                            <td>$${parseFloat(bill.amount).toFixed(2)}</td>
+                                                            <td>${bill.status}</td>
+                                                        </tr>
+                                                    `).join('')}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    `;
+                                }
+                            } else if (reportType === 'receipts') {
+                                const paidBills = bills.filter(b => b.patientId === patientId && b.status === 'Paid');
+                                if (paidBills.length === 0) {
+                                    html = '<div class="alert alert-error">No payment receipts found for this patient.</div>';
+                                } else {
+                                    html = `
+                                        <h4>Payment Receipts for ${patient.firstName} ${patient.lastName}</h4>
+                                        <div class="table-container">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Receipt #</th>
+                                                        <th>Service</th>
+                                                        <th>Date</th>
+                                                        <th>Amount</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    ${paidBills.map(bill => `
+                                                        <tr>
+                                                            <td>R-${bill.id}</td>
+                                                            <td>${bill.service}</td>
+                                                            <td>${formatDate(bill.date)}</td>
+                                                            <td>$${parseFloat(bill.amount).toFixed(2)}</td>
+                                                        </tr>
+                                                    `).join('')}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    `;
+                                }
+                            } else if (reportType === 'lab') {
+                                // Demo: No real lab data, just a stub
+                                html = `
+                                    <h4>Lab Test Results for ${patient.firstName} ${patient.lastName}</h4>
+                                    <div class="table-container">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Test</th>
+                                                    <th>Date</th>
+                                                    <th>Result</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Blood Test</td>
+                                                    <td>${formatDate(new Date())}</td>
+                                                    <td>Normal</td>
+                                                    <td>Completed</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>X-Ray</td>
+                                                    <td>${formatDate(new Date())}</td>
+                                                    <td>No issues</td>
+                                                    <td>Completed</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div style="color:#888;font-size:0.95em;margin-top:10px;"><em>Lab results are demo data.</em></div>
+                                `;
+                            } else {
+                                html = '<div class="alert alert-error">Please select a report type.</div>';
+                            }
+
+                            document.getElementById('reportResult').innerHTML = html;
+
+            
+                            // Remove print/download buttons from report module
+
+                            // Create a top-bar menu for print/download buttons
+                            let reportTopBar = document.getElementById('reportTopBar');
+                            if (!reportTopBar) {
+                                reportTopBar = document.createElement('div');
+                                reportTopBar.id = 'reportTopBar';
+                                reportTopBar.style = "display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-bottom:10px;";
+                                // Insert at the top of the reports tab
+                                const reportsTab = document.getElementById('reports');
+                                if (reportsTab) reportsTab.insertBefore(reportTopBar, reportsTab.firstChild);
+                            }
+                            reportTopBar.innerHTML = `
+                                <button class="btn btn-primary" id="printReportBtn" style="margin-right:4px;">Print</button>
+                                <button class="btn btn-secondary" id="downloadReportBtn">Download</button>
+                            `;
+
+                            // Print handler
+                            document.getElementById('printReportBtn').onclick = function() {
+                                const reportResultDiv = document.getElementById('reportResult');
+                                if (!reportResultDiv) return;
+                                const reportContent = reportResultDiv.cloneNode(true);
+                                // Remove any top-bar or button containers from print
+                                const btnDiv = reportContent.querySelector('.report-btns');
+                                if (btnDiv) btnDiv.remove();
+                                const printContent = reportContent.innerHTML;
+                                const win = window.open('', '', 'width=900,height=700');
+                                win.document.write(`
+                                    <html>
+                                    <head>
+                                        <title>Patient Report</title>
+                                        <style>
+                                            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 30px; }
+                                            table { width: 100%; border-collapse: collapse; margin-top: 18px; }
+                                            th, td { border: 1px solid #e2e8f0; padding: 10px; }
+                                            th { background: #667eea; color: #fff; }
+                                            h4 { margin-bottom: 10px; }
+                                        </style>
+                                    </head>
+                                    <body>
+                                        ${printContent}
+                                    </body>
+                                    </html>
+                                `);
+                                win.document.close();
+                                win.focus();
+                                win.print();
+                                setTimeout(() => win.close(), 500);
+                            };
+
+                            // Download handler
+                            document.getElementById('downloadReportBtn').onclick = function() {
+                                const reportResultDiv = document.getElementById('reportResult');
+                                if (!reportResultDiv) return;
+                                const reportContent = reportResultDiv.cloneNode(true);
+                                const btnDiv = reportContent.querySelector('.report-btns');
+                                if (btnDiv) btnDiv.remove();
+                                const reportHtml = reportContent.innerHTML;
+                                const blob = new Blob(
+                                    [`<html><head><meta charset="UTF-8"><title>Patient Report</title></head><body>${reportHtml}</body></html>`],
+                                    { type: 'text/html' }
+                                );
+                                const url = URL.createObjectURL(blob);
+                                const a = document.createElement('a');
+                                a.href = url;
+                                a.download = 'patient_report.html';
+                                document.body.appendChild(a);
+                                a.click();
+                                setTimeout(() => {
+                                    document.body.removeChild(a);
+                                    URL.revokeObjectURL(url);
+                                }, 100);
+                            };
+                        } // <-- Add this closing brace to properly close loadReports
+                    } // <-- This is the missing closing brace for loadReports
+
+                    // Audit Logs  (stub)
+                    function loadAuditLogs() {
+                        const logDiv = document.getElementById('auditLogs');
+                        logDiv.innerHTML = `
+                            <h2>📝 Audit Logs </h2>
+                            <div style="padding:30px 0;color:#888;text-align:center;">
+                                <em>Audit logs functionality coming soon.</em>
+                            </div>
+                        `;
+                    }
+
+        // Login  (stub)
+        function loadLogin() {
+            // Login functionality coming soon.
+        }
+
+        // Laboratory Module (stub)
+        function loadLaboratory() {
+            const labDiv = document.getElementById('laboratory');
+            labDiv.innerHTML = `
+            <h2>🧪 Laboratory Module</h2>
+            <div class="form-section">
+            <h3>Add Lab Test Result</h3>
+            <form id="labTestForm">
+                <div class="form-row">
+                <div class="form-group">
+                    <label>Patient</label>
+                    <select id="labPatient" required>
+                    <option value="">Select Patient</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Test Type</label>
+                    <select id="labTestType" required>
+                    <option value="">Select Test</option>
+                    <option value="Blood Test">Blood Test</option>
+                    <option value="Urine Test">Urine Test</option>
+                    <option value="Stool Test">Stool Test</option>
+                    <option value="X-Ray">X-Ray</option>
+                    <option value="MRI">MRI</option>
+                    <option value="CT Scan">CT Scan</option>
+                    <option value="Other">Other</option>
+                    </select>
+                </div>
+                </div>
+                <div class="form-row">
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="labDescription" rows="2" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Result</label>
+                    <select id="labResult" required>
+                    <option value="">Select Result</option>
+                    <option value="Positive">Positive</option>
+                    <option value="Negative">Negative</option>
+                    <option value="Normal">Normal</option>
+                    <option value="Abnormal">Abnormal</option>
+                    </select>
+                </div>
+                </div>
+                <div class="form-row">
+                <div class="form-group">
+                    <label>Recommendation</label>
+                    <textarea id="labRecommendation" rows="2" required></textarea>
+                </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Post to Reports</button>
+            </form>
+            </div>
+            <div class="table-container" style="margin-top:20px;">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Patient</th>
+                    <th>Test</th>
+                    <th>Description</th>
+                    <th>Result</th>
+                    <th>Recommendation</th>
+                    <th>Date</th>
+                </tr>
+                </thead>
+                <tbody id="labTestsTable"></tbody>
+            </table>
+            </div>
+            `;
+
+            // Populate patient dropdown
+            const select = document.getElementById('labPatient');
+            select.innerHTML = '<option value="">Select Patient</option>';
+            patients.forEach(patient => {
+            const option = document.createElement('option');
+            option.value = patient.id;
+            option.textContent = `${patient.firstName} ${patient.lastName}`;
+            select.appendChild(option);
+            });
+
+            // Render existing lab tests
+            renderLabTests();
+
+            // Form submit
+            document.getElementById('labTestForm').onsubmit = addLabTest;
+        }
+
+        // Lab tests data
+        let labTests = JSON.parse(localStorage.getItem('labTests')) || [];
+
+        function saveLabTests() {
+            localStorage.setItem('labTests', JSON.stringify(labTests));
+        }
+
+        function addLabTest(e) {
+            e.preventDefault();
+            const patientId = parseInt(document.getElementById('labPatient').value);
+            const patient = patients.find(p => p.id === patientId);
+            if (!patient) {
+            showAlert('Patient not found.', 'error');
+            return;
+            }
+            const newLabTest = {
+            id: labTests.length > 0 ? Math.max(...labTests.map(l => l.id)) + 1 : 1,
+            patientId: patientId,
+            testType: document.getElementById('labTestType').value,
+            description: document.getElementById('labDescription').value,
+            result: document.getElementById('labResult').value,
+            recommendation: document.getElementById('labRecommendation').value,
+            date: new Date().toISOString()
+            };
+            labTests.push(newLabTest);
+            saveLabTests();
+            renderLabTests();
+            document.getElementById('labTestForm').reset();
+            showAlert('Lab test posted to reports!', 'success');
+        }
+
+        function renderLabTests() {
+            const tbody = document.getElementById('labTestsTable');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            labTests.slice().reverse().forEach(lab => {
+            const patient = patients.find(p => p.id === lab.patientId);
+            tbody.innerHTML += `
+                <tr>
+                <td>${patient ? patient.firstName + ' ' + patient.lastName : 'Unknown'}</td>
+                <td>${lab.testType}</td>
+                <td>${lab.description}</td>
+                <td>${lab.result}</td>
+                <td>${lab.recommendation}</td>
+                <td>${formatDate(lab.date)}</td>
+                </tr>
+            `;
+            });
+        }
+
+        // --- Add to reports dashboard ---
+        // Patch loadReports to include labTests for selected patient
+        const originalLoadReports = loadReports;
+        loadReports = function() {
+            originalLoadReports();
+            // Patch reportType 'lab' to use real labTests
+            document.getElementById('reportForm').onsubmit = function(e) {
+                e.preventDefault();
+                const patientId = parseInt(document.getElementById('reportPatient').value);
+                const reportType = document.getElementById('reportType').value;
+                const patient = patients.find(p => p.id === patientId);
+                let html = '';
+
+                if (!patient) {
+                    document.getElementById('reportResult').innerHTML = '<div class="alert alert-error">Patient not found.</div>';
+                    return;
+                }
+
+                if (reportType === 'lab') {
+                    const patientLabTests = labTests.filter(l => l.patientId === patientId);
+                    if (patientLabTests.length === 0) {
+                        html = '<div class="alert alert-error">No lab test results found for this patient.</div>';
+                    } else {
+                        html = `
+                            <h4>Lab Test Results for ${patient.firstName} ${patient.lastName}</h4>
+                            <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>Test</th>
+                                    <th>Description</th>
+                                    <th>Result</th>
+                                    <th>Recommendation</th>
+                                    <th>Date</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                ${patientLabTests.map(lab => `
+                                    <tr>
+                                    <td>${lab.testType}</td>
+                                    <td>${lab.description}</td>
+                                    <td>${lab.result}</td>
+                                    <td>${lab.recommendation}</td>
+                                    <td>${formatDate(lab.date)}</td>
+                                    </tr>
+                                `).join('')}
+                                </tbody>
+                            </table>
+                            </div>
+                        `;
+                    }
+                } else if (reportType === 'bills') {
+                    const patientBills = bills.filter(b => b.patientId === patientId);
+                    if (patientBills.length === 0) {
+                        html = '<div class="alert alert-error">No bills found for this patient.</div>';
+                    } else {
+                        html = `
+                            <h4>Bills for ${patient.firstName} ${patient.lastName}</h4>
+                            <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>Bill ID</th>
+                                    <th>Service</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                ${patientBills.map(bill => `
+                                    <tr>
+                                    <td>#${bill.id}</td>
+                                    <td>${bill.service}</td>
+                                    <td>${formatDate(bill.date)}</td>
+                                    <td>$${parseFloat(bill.amount).toFixed(2)}</td>
+                                    <td>${bill.status}</td>
+                                    </tr>
+                                `).join('')}
+                                </tbody>
+                            </table>
+                            </div>
+                        `;
+                    }
+                } else if (reportType === 'receipts') {
+                    const paidBills = bills.filter(b => b.patientId === patientId && b.status === 'Paid');
+                    if (paidBills.length === 0) {
+                        html = '<div class="alert alert-error">No payment receipts found for this patient.</div>';
+                    } else {
+                        html = `
+                            <h4>Payment Receipts for ${patient.firstName} ${patient.lastName}</h4>
+                            <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>Receipt #</th>
+                                    <th>Service</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                ${paidBills.map(bill => `
+                                    <tr>
+                                    <td>R-${bill.id}</td>
+                                    <td>${bill.service}</td>
+                                    <td>${formatDate(bill.date)}</td>
+                                    <td>$${parseFloat(bill.amount).toFixed(2)}</td>
+                                    </tr>
+                                `).join('')}
+                                </tbody>
+                            </table>
+                            </div>
+                        `;
+                    }
+                } else {
+                    html = '<div class="alert alert-error">Please select a report type.</div>';
+                }
+
+                document.getElementById('reportResult').innerHTML = html;
+            };
+        }
+
+        // Audit Logs  (stub)
+        function loadAuditLogs() {
+            const logDiv = document.getElementById('auditLogs');
+            // Load audit logs from localStorage
+            let auditLogs = JSON.parse(localStorage.getItem('auditLogs')) || [];
+            // Notify admin if any breach detected
+            let breachAlert = '';
+            const user = JSON.parse(localStorage.getItem('hmsLoggedInUser') || '{}');
+            if (user.role === 'Admin') {
+            const breaches = auditLogs.filter(log => log.breach);
+            if (breaches.length > 0) {
+                breachAlert = `
+                <div class="alert alert-error">
+                    <strong>Security Alert:</strong> ${breaches.length} login breach${breaches.length > 1 ? 'es' : ''} detected!
+                </div>
+                `;
+            }
+            }
+            logDiv.innerHTML = `
+            <h2>📝 Audit Logs </h2>
+            ${breachAlert}
+            <div class="table-container">
+                <table class="table">
+                <thead>
+                    <tr>
+                    <th>User</th>
+                    <th>Role</th>
+                    <th>Timestamp</th>
+                    <th>Status</th>
+                    <th>IP</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${auditLogs.length === 0 ? `<tr><td colspan="5" style="text-align:center;color:#888;">No login activity yet.</td></tr>` :
+                    auditLogs.slice().reverse().map(log => `
+                        <tr>
+                        <td>${log.username}</td>
+                        <td>${log.role}</td>
+                        <td>${new Date(log.timestamp).toLocaleString()}</td>
+                        <td>
+                            ${log.breach ? '<span class="status-badge status-cancelled">Breach</span>' : '<span class="status-badge status-completed">Success</span>'}
+                        </td>
+                        <td>${log.ip || '-'}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+                </table>
+            </div>
+            `;
+        }
+
+        // --- Audit log tracking ---
+        // Call this function on every login attempt (success or fail)
+        function logAudit(username, role, status, ip) {
+            let auditLogs = JSON.parse(localStorage.getItem('auditLogs')) || [];
+            auditLogs.push({
+            username,
+            role,
+            timestamp: new Date().toISOString(),
+            breach: status === 'breach',
+            ip: ip || ''
+            });
+            localStorage.setItem('auditLogs', JSON.stringify(auditLogs));
+        }
+
+        // Patch login function to log audit
+        const origLogin = login;
+        login = function(event) {
+            event.preventDefault();
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const role = document.getElementById('loginUserRole').value;
+            // Try to get IP (best effort, may be blank)
+            let ip = '';
+            try {
+            fetch('https://api.ipify.org?format=json').then(r => r.json()).then(data => {
+                ip = data.ip;
+                // Continue login after IP fetch
+                doLogin(username, password, role, ip);
+            }).catch(() => {
+                doLogin(username, password, role, '');
+            });
+            } catch {
+            doLogin(username, password, role, '');
+            }
+        };
+        function doLogin(username, password, role, ip) {
+            const user = demoUsers.find(
+                u => u.username === username && u.password === password && u.role === role
+            );
+            if (user) {
+                localStorage.setItem('hmsLoggedInUser', JSON.stringify(user));
+                showLoginScreen(false);
+                showTab('dashboard', {target: document.querySelector('.nav-tab[onclick*="dashboard"]')});
+                showAlert('Login successful!', 'success');
+                logAudit(username, role, 'success', ip);
+            } else {
+                showAlert('Invalid credentials or role.', 'error');
+                logAudit(username, role, 'breach', ip);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('hmsLoggedInUser');
+            showLoginScreen(true);
+        }
+        
+        function exitWindow() {
+            if (confirm('Are you sure you want to exit the application?')) {
+                window.close();
+                // For browsers that block window.close(), redirect to about:blank
+                setTimeout(() => {
+                    window.location.href = 'about:blank';
+                }, 200);
+            }
+        }
+
+        // Attach exitWindow to Logout tab
+        document.addEventListener('DOMContentLoaded', function() {
+            const logoutBtn = Array.from(document.querySelectorAll('.nav-tab'))
+                .find(btn => btn.textContent.trim().toLowerCase() === 'logout');
+            if (logoutBtn) {
+                logoutBtn.onclick = exitWindow;
+            }
+        });
+        // Start the application
+        window.onload = function init() {
+            loadDashboard();
+            loadPatients();
+            loadDoctors();
+            loadAppointments();
+            loadBilling();
+            loadPharmacy();
+            loadBeds();
+            loadDepartments();
+            loadUsers();
+            loadAssets();
+            loadStaffSchedule();
+            loadInsurance();
+            loadReports();
+            loadAuditLogs();
+            loadLaboratory();
+        };
+    </script>
+
+    
+
+        
+
+            <!-- Dashboard Slideshow -->
+            <div id="dashboardSlideshow" style="width:100%;max-width:700px;margin:0 auto 24px auto;position:relative;overflow:hidden;border-radius:14px;box-shadow:0 4px 18px rgba(102,126,234,0.13);">
+                <img class="slide-img" src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80" alt="" style="width:100%;display:block;object-fit:cover;height:280px;">
+                <img class="slide-img" src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=800&q=80" alt="" style="width:100%;display:none;object-fit:cover;height:280px;">
+                <img class="slide-img" src="https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?auto=format&fit=crop&w=800&q=80" alt="" style="width:100%;display:none;object-fit:cover;height:280px;">
+                <!-- Slide controls -->
+                <button id="slidePrev" aria-label="Previous" style="position:absolute;top:50%;left:12px;transform:translateY(-50%);background:rgba(102,126,234,0.7);color:#fff;border:none;border-radius:50%;width:36px;height:36px;font-size:1.5rem;cursor:pointer;z-index:2;">&#10094;</button>
+                <button id="slideNext" aria-label="Next" style="position:absolute;top:50%;right:12px;transform:translateY(-50%);background:rgba(102,126,234,0.7);color:#fff;border:none;border-radius:50%;width:36px;height:36px;font-size:1.5rem;cursor:pointer;z-index:2;">&#10095;</button>
+                <div id="slideDots" style="position:absolute;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:2;">
+                    <span class="slide-dot" style="width:12px;height:12px;border-radius:50%;background:#667eea;opacity:0.7;display:inline-block;cursor:pointer;"></span>
+                    <span class="slide-dot" style="width:12px;height:12px;border-radius:50%;background:#667eea;opacity:0.3;display:inline-block;cursor:pointer;"></span>
+                    <span class="slide-dot" style="width:12px;height:12px;border-radius:50%;background:#667eea;opacity:0.3;display:inline-block;cursor:pointer;"></span>
+                    <span class="slide-dot" style="width:12px;height:12px;border-radius:50%;background:#667eea;opacity:0.3;display:inline-block;cursor:pointer;"></span>
+                </div>
+            </div>
+            <script>
+                // Hide slideshow by default, show only on dashboard
+                function updateSlideshowVisibility(tabName) {
+                    var slideshow = document.getElementById('dashboardSlideshow');
+                    if (!slideshow) return;
+                    slideshow.style.display = (tabName === 'dashboard') ? '' : 'none';
+                }
+
+                // Patch showTab to also toggle slideshow
+                const originalShowTab = showTab;
+                showTab = function(tabName, event) {
+                    originalShowTab(tabName, event);
+                    updateSlideshowVisibility(tabName);
+                };
+
+                // On page load, ensure correct slideshow visibility
+                document.addEventListener('DOMContentLoaded', function() {
+                    updateSlideshowVisibility('dashboard');
+                });
+            </script>
+            <script>
+            (function(){
+                const slides = document.querySelectorAll('#dashboardSlideshow .slide-img');
+                const dots = document.querySelectorAll('#dashboardSlideshow .slide-dot');
+                let current = 0;
+                let timer = null;
+
+                function showSlide(idx) {
+                    slides.forEach((img, i) => {
+                        img.style.display = i === idx ? 'block' : 'none';
+                    });
+                    dots.forEach((dot, i) => {
+                        dot.style.opacity = i === idx ? '0.7' : '0.3';
+                    });
+                    current = idx;
+                }
+                function nextSlide() {
+                    showSlide((current + 1) % slides.length);
+                }
+                function prevSlide() {
+                    showSlide((current - 1 + slides.length) % slides.length);
+                }
+                function startAuto() {
+                    timer = setInterval(nextSlide, 3500);
+                }
+                function stopAuto() {
+                    if (timer) clearInterval(timer);
+                }
+                document.getElementById('slideNext').onclick = function() { stopAuto(); nextSlide(); startAuto(); };
+                document.getElementById('slidePrev').onclick = function() { stopAuto(); prevSlide(); startAuto(); };
+                dots.forEach((dot, i) => {
+                    dot.onclick = function() { stopAuto(); showSlide(i); startAuto(); };
+                });
+                showSlide(0);
+                startAuto();
+            })();
+            </script>
+            </div>
+        </div>
+
+        <svg viewBox="0 0 100 100">
+	<filter id="turb2" x="-100%" y="-100%" width="300%" height="300%">
+		<feTurbulence type="turbulence" baseFrequency="0.06" numOctaves="3" result="turbulence" seed="1" />
+		<feDisplacementMap in="SourceGraphic" scale="12" />
+		<!--reverse offset by 1/4 of the displacement scale-->
+		<feOffset in="displaced" dx="-3" dy="-3" />
+	</filter>
+	<radialGradient id="grad">
+		<stop offset="0%" stop-color="silver" />
+		<stop offset="90%" stop-color="#000" />
+		<stop offset="100%" stop-color="rgba(255,255,255,0)" />
+	</radialGradient>
+	<symbol id="fireContainer">
+		<line x1="50" y1="25" x2="150" y2="50" stroke="#f0f" stroke-width="0.5">
+			<animate attributeName="x1" values="0%;100%;0%" dur="4s" repeatCount="indefinite" />
+			<animate attributeName="y1" values="0%;100%;0%;" dur="5s" repeatCount="indefinite" />
+			<animate attributeName="x2" values="0%;100%;0%" dur="4s" begin="-2s" repeatCount="indefinite" />
+			<animate attributeName="y2" values="0%;100%;0%;" dur="5s" begin="-2.1s" repeatCount="indefinite" />
+		</line>
+		<line x1="50" y1="25" x2="150" y2="50" stroke="#0ff" stroke-width="0.5">
+			<animate attributeName="x1" values="0%;100%;0%" dur="5.2s" begin="-1.3s" repeatCount="indefinite" />
+			<animate attributeName="y1" values="0%;100%;0%;" dur="5.3s" begin="-3.11s" repeatCount="indefinite" />
+			<animate attributeName="x2" values="0%;100%;0%" dur="5.4s" begin="-1.2s" repeatCount="indefinite" />
+			<animate attributeName="y2" values="0%;100%;0%;" dur="5.5s" begin="-1.1s" repeatCount="indefinite" />
+		</line>
+		<line x1="50" y1="25" x2="150" y2="50" stroke="#ff0" stroke-width="0.5">
+			<animate attributeName="x1" values="0%;100%;0%" dur="4.1s" begin="-2.4s" repeatCount="indefinite" />
+			<animate attributeName="y1" values="0%;100%;0%;" dur="5.25s" begin="-2.11s" repeatCount="indefinite" />
+			<animate attributeName="x2" values="0%;100%;0%" dur="4.3s" begin="-1.35s" repeatCount="indefinite" />
+			<animate attributeName="y2" values="0%;100%;0%;" dur="5.45s" begin="-1.75s" repeatCount="indefinite" />
+		</line>
+	</symbol>
+	<g class="fireBall" filter="url(#turb2)">
+		<use href="#fireContainer">
+			<animate attributeName="x" values="0; -7000" dur="100s" begin="0s" repeatCount="indefinite" />
+			<animate attributeName="y" values="0; -10000" dur="100s" begin="0s" repeatCount="indefinite" additive="sum" />
+		</use>
+		<animateTransform attributeName="transform" attributeType="XML" type="translate" values="0 0; 7000 10000" dur="100s" begin="0s" repeatCount="indefinite" />
+	</g>
+
+	<circle cx="0%" cy="0%" r="5" fill="url(#grad)">
+		<animate attributeName="cx" values="0%;100%;0%" dur="4s" repeatCount="indefinite" />
+		<animate attributeName="cy" values="0%;100%;0%;" dur="5s" repeatCount="indefinite" />
+	</circle>
+	<circle cx="0%" cy="0%" r="5" fill="url(#grad)">
+		<animate attributeName="cx" values="0%;100%;0%" dur="4s" begin="-2s" repeatCount="indefinite" />
+		<animate attributeName="cy" values="0%;100%;0%;" dur="5s" begin="-2.1s" repeatCount="indefinite" />
+	</circle>
+	
+	<circle cx="0%" cy="0%" r="5" fill="url(#grad)">
+		<animate attributeName="cx" values="0%;100%;0%" dur="5.2s" begin="-1.3s" repeatCount="indefinite" />
+		<animate attributeName="cy" values="0%;100%;0%;" dur="5.3s" begin="-3.11s" repeatCount="indefinite" />
+	</circle>
+	<circle cx="0%" cy="0%" r="5" fill="url(#grad)">
+		<animate attributeName="cx" values="0%;100%;0%" dur="5.4s" begin="-1.2s" repeatCount="indefinite" />
+		<animate attributeName="cy" values="0%;100%;0%;" dur="5.5s" begin="-1.1s" repeatCount="indefinite" />
+	</circle>
+	
+	<circle cx="0%" cy="0%" r="5" fill="url(#grad)">
+		<animate attributeName="cx" values="0%;100%;0%" dur="4.1s" begin="-2.4s" repeatCount="indefinite" />
+		<animate attributeName="cy" values="0%;100%;0%;" dur="5.25s" begin="-2.11s" repeatCount="indefinite" />
+	</circle>
+	<circle cx="0%" cy="0%" r="5" fill="url(#grad)">
+		<animate attributeName="cx" values="0%;100%;0%" dur="4.3s" begin="-1.35s" repeatCount="indefinite" />
+		<animate attributeName="cy" values="0%;100%;0%;" dur="5.45s" begin="-1.75s" repeatCount="indefinite" />
+	</circle>
+	
+</svg>
+
+        
+
+        <div class="wrapper">
+        <div class="liquidGlass-wrapper menu">
+        <div class="liquidGlass-effect"></div>
+        <div class="liquidGlass-tint"></div>
+        <div class="liquidGlass-shine"></div>
+        <div class="liquidGlass-text">
+          <div onclick="window.location.href='mailto:support@hospital.com'" style="cursor:pointer;">Send Mail</div>
+          <div onclick="window.open('https://tawk.to/chat-support', '_blank')" style="cursor:pointer;">Chat with Us</div>
+          <div onclick="window.Tawk_API && window.Tawk_API.maximize ? window.Tawk_API.maximize() : window.open('https://tawk.to/chat-support', '_blank')" style="cursor:pointer;">Open Chatbot</div>
+          <!-- Tawk.to widget embed -->
+          <script type="text/javascript">
+          var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+          (function(){
+            var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+            s1.async=true;
+            s1.src='https://embed.tawk.to/your_property_id/1xxxxxxx';
+            s1.charset='UTF-8';
+            s1.setAttribute('crossorigin','*');
+            s0.parentNode.insertBefore(s1,s0);
+          })();
+          </script>
+          <div onclick="alert('Settings feature coming soon!')" style="cursor:pointer;">Settings</div>
+          <div onclick="window.open('https://github.com/your-hms-repo', '_blank')" style="cursor:pointer;">Repository</div>
+        </div>
+      </div>
+
+      <a href="">
+        <div class="liquidGlass-wrapper dock">
+          <div class="liquidGlass-effect"></div>
+          <div class="liquidGlass-tint"></div>
+          <div class="liquidGlass-shine"></div>
+          <div class="liquidGlass-text">
+            <div class="dock">
+                <div id="dashboardDock" style="position:fixed;top:24px;right:24px;left:auto;bottom:auto;transform:none;z-index:100;display:flex;flex-direction:column;align-items:center;gap:24px;padding:18px 24px;background:rgba(255,255,255,0.7);border-radius:2rem;box-shadow:0 4px 18px rgba(102,126,234,0.13);backdrop-filter:blur(8px);"></div>
+                <div style="position:fixed;top:24px;right:24px;left:auto;bottom:auto;z-index:100;display:flex;flex-direction:row;align-items:center;gap:24px;padding:18px 24px;background:rgba(255,255,255,0.7);border-radius:2rem;box-shadow:0 4px 18px rgba(102,126,234,0.13);backdrop-filter:blur(8px);">
+                    <img
+                        src="https://raw.githubusercontent.com/lucasromerodb/liquid-glass-effect-macos/refs/heads/main/assets/finder.png"
+                        alt="Finder"
+                    />
+                    <img
+                        src="https://raw.githubusercontent.com/lucasromerodb/liquid-glass-effect-macos/refs/heads/main/assets/map.png"
+                        alt="Map"
+                        onclick="window.open('https://maps.google.com', '_blank')"
+                        style="cursor:pointer;"
+                    />
+                    <img
+                        src="https://raw.githubusercontent.com/lucasromerodb/liquid-glass-effect-macos/refs/heads/main/assets/messages.png"
+                        alt="Messages"
+                        onclick="window.open('https://mail.google.com', '_blank')"
+                        style="cursor:pointer;"
+                    />
+                    <img
+                        src="https://raw.githubusercontent.com/lucasromerodb/liquid-glass-effect-macos/refs/heads/main/assets/notes.png"
+                        alt="Notes"
+                        onclick="window.open('https://keep.google.com', '_blank')"
+                        style="cursor:pointer;"
+                    />
+                    <img
+                        src="https://raw.githubusercontent.com/lucasromerodb/liquid-glass-effect-macos/refs/heads/main/assets/safari.png"
+                        alt="Safari"
+                        onclick="window.open('https://www.google.com', '_blank')"
+                        style="cursor:pointer;"
+                    />
+                    <img
+                        src="https://raw.githubusercontent.com/lucasromerodb/liquid-glass-effect-macos/refs/heads/main/assets/books.png"
+                        alt="Books"
+                        onclick="window.open('https://books.google.com', '_blank')"
+                        style="cursor:pointer;"
+                    />
+                </div>
+                
+            </div>
+            </div>
+            </div>
+            
+          </div>
+        </div>
+      </a>
+
+      <a href="javascript:void(0);" onclick="logout()">
+        <div class="liquidGlass-wrapper button">
+          <div class="liquidGlass-effect"></div>
+          <div class="liquidGlass-tint"></div>
+          <div class="liquidGlass-shine"></div>
+          <div class="liquidGlass-text">
+            <svg
+              width="120"
+              viewBox="0 0 186 39"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M30.6275 38.2073V33.6309C30.6275 33.4933 30.5583 33.4245 30.4197 33.4245H28.9304C27.7527 33.4245 27.1293 32.7707 27.1293 31.6352V20.1772C27.1293 13.3987 21.1719 10.4051 14.9374 10.4051C7.90633 10.4051 1.94895 12.4697 1.49868 19.3514C1.49868 19.489 1.56795 19.5578 1.7065 19.5578H7.14434C7.24825 19.5578 7.35216 19.489 7.38679 19.3514C7.69852 16.8395 10.4348 15.2912 14.4179 15.2912C18.7474 15.2912 21.2758 16.7019 21.2758 19.0073V19.7987C21.2758 21.2783 20.1675 22.5858 17.362 22.5858H14.5911C5.44718 22.5858 0.598145 25.3729 0.598145 30.8094C0.598145 36.1084 4.75446 38.8955 12.3397 38.8955C17.8122 38.8955 20.9295 36.7277 22.6959 35.0761C22.7998 34.9729 22.9037 35.0073 22.9383 35.1449C23.6657 37.2094 25.6746 38.4137 28.965 38.4137H30.4197C30.5583 38.4137 30.6275 38.3105 30.6275 38.2073ZM21.2758 27.1965V27.8847C21.2758 31.3944 17.8122 33.975 13.552 33.975C8.42587 33.975 6.48626 32.874 6.48626 30.4654C6.48626 28.332 9.04932 26.9901 14.5911 26.9901H21.068C21.2065 26.9901 21.2758 27.0589 21.2758 27.1965ZM31.3202 24.6503C31.3202 33.1492 37.2776 38.8955 45.6942 38.8955C52.5867 38.8955 57.8168 35.7987 59.2368 30.4998C59.2715 30.3621 59.2022 30.2589 59.0637 30.2589H53.3141C53.2102 30.2589 53.1063 30.2933 53.0716 30.3965C51.9286 32.5987 49.9198 34.0094 45.6942 34.0094C40.568 34.0094 37.6933 30.8439 37.5547 27.1965C37.5547 27.0589 37.624 26.9901 37.7625 26.9901H59.8256C59.9296 26.9901 60.0335 26.9213 60.0335 26.7836C60.6569 17.4589 54.8034 10.4051 45.6942 10.4051C37.3123 10.4051 31.3202 16.0481 31.3202 24.6503ZM37.5547 22.3793C37.4854 19.7987 39.9446 15.2912 45.6942 15.2912C51.4437 15.2912 53.7644 19.1449 53.7297 22.3793C53.7297 22.517 53.6258 22.5858 53.5219 22.5858H37.7625C37.6586 22.5858 37.5547 22.517 37.5547 22.3793ZM75.966 16.0481H79.4296C79.5681 16.0481 79.6374 15.9793 79.6374 15.8417V11.0933C79.6374 10.9557 79.5335 10.8869 79.4296 10.8869H76.9012C74.061 10.8869 71.1516 11.8847 69.1427 14.1901C69.0388 14.3277 68.9003 14.2933 68.8656 14.1213L68.1383 11.0589C68.1036 10.9557 68.0344 10.8869 67.9305 10.8869H63.3931C63.2546 10.8869 63.1853 10.9901 63.1853 11.0933V38.2073C63.1853 38.3449 63.2892 38.4137 63.3931 38.4137H68.5193C68.6578 38.4137 68.7271 38.3105 68.7271 38.2073V24.6159C68.7271 18.732 71.7404 16.0481 75.966 16.0481ZM108.697 24.6503C108.697 15.9449 102.463 10.4051 93.9767 10.4051C85.4909 10.4051 79.2911 15.9449 79.2911 24.6503C79.2911 33.3213 85.5255 38.8955 93.9767 38.8955C102.428 38.8955 108.697 33.3213 108.697 24.6503ZM102.74 24.6503C102.74 30.0869 98.8257 34.0094 93.9767 34.0094C89.1623 34.0094 85.2484 30.0525 85.2484 24.6503C85.2484 19.2481 89.1623 15.2912 93.9767 15.2912C98.8257 15.2912 102.74 19.2137 102.74 24.6503ZM121.963 38.2073V33.4589C121.963 33.3213 121.893 33.2525 121.755 33.2525H120.265C118.638 33.2525 117.46 32.5299 117.46 30.5686C117.46 27.0933 118.36 23.5492 119.053 19.6955C119.884 15.2567 120.716 10.2331 120.82 7.8933C121.062 2.73201 118.049 0.56427 114.343 0.56427H112.022C111.883 0.56427 111.814 0.633087 111.814 0.770722V5.34707C111.814 5.4847 111.918 5.55352 112.022 5.55352H113.234C114.447 5.55352 115.209 6.20728 115.278 7.82449C115.347 9.99223 114.62 13.4675 113.581 18.8697C112.784 23.1019 111.953 27.5406 111.953 31.6008C111.953 35.9707 114.966 38.4137 119.538 38.4137H121.755C121.893 38.4137 121.963 38.3105 121.963 38.2073ZM152.574 38.2073V11.0933C152.574 10.9557 152.505 10.8869 152.366 10.8869H147.794C147.69 10.8869 147.621 10.9557 147.586 11.0589L146.963 13.7428C146.928 13.8804 146.79 13.9148 146.686 13.8116C144.192 11.3686 140.867 10.4051 137.542 10.4051C129.264 10.4051 123.445 16.1858 123.445 24.6847C123.445 33.1492 129.298 38.8955 137.542 38.8955C140.798 38.8955 144.781 37.7256 146.686 35.489C146.824 35.3514 146.928 35.3858 146.963 35.5578L147.586 38.2417C147.621 38.3449 147.69 38.4137 147.794 38.4137H152.366C152.505 38.4137 152.574 38.3105 152.574 38.2073ZM129.402 24.6847C129.402 19.1449 133.282 15.2912 138.131 15.2912C143.153 15.2912 146.686 19.317 146.686 24.6847C146.686 30.018 143.153 34.0094 138.131 34.0094C133.316 34.0094 129.402 30.1557 129.402 24.6847ZM156.73 0.770722V38.2073C156.73 38.3449 156.799 38.4137 156.938 38.4137H161.51C161.614 38.4137 161.683 38.3449 161.718 38.2417L162.307 35.7299C162.341 35.5922 162.48 35.5234 162.584 35.6266C165.251 37.932 168.818 38.8955 171.762 38.8955C180.006 38.8955 185.859 33.1492 185.859 24.6847C185.859 16.1858 179.694 10.4051 171.416 10.4051C167.952 10.4051 165.354 11.2998 162.514 13.7084C162.376 13.846 162.272 13.7772 162.272 13.6051V0.770722C162.272 0.633087 162.168 0.56427 162.064 0.56427H156.938C156.799 0.56427 156.73 0.667496 156.73 0.770722ZM179.902 24.6847C179.902 30.0869 175.988 34.0094 171.173 34.0094C166.151 34.0094 162.618 29.9492 162.618 24.6847C162.618 19.4202 166.151 15.3256 171.173 15.3256C176.022 15.3256 179.902 19.2481 179.902 24.6847Z"
+                fill="white"
+              />
+            </svg>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <svg style="display: none">
+      <filter
+        id="glass-distortion"
+        x="0%"
+        y="0%"
+        width="100%"
+        height="100%"
+        filterUnits="objectBoundingBox"
+      >
+        <feTurbulence
+          type="fractalNoise"
+          baseFrequency="0.01 0.01"
+          numOctaves="1"
+          seed="5"
+          result="turbulence"
+        />
+        <!-- Seeds: 14, 17,  -->
+
+        <feComponentTransfer in="turbulence" result="mapped">
+          <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+          <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+          <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+        </feComponentTransfer>
+
+        <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+
+        <feSpecularLighting
+          in="softMap"
+          surfaceScale="5"
+          specularConstant="1"
+          specularExponent="100"
+          lighting-color="white"
+          result="specLight"
+        >
+          <fePointLight x="-200" y="-200" z="300" />
+        </feSpecularLighting>
+
+        <feComposite
+          in="specLight"
+          operator="arithmetic"
+          k1="0"
+          k2="1"
+          k3="1"
+          k4="0"
+          result="litImage"
+        />
+
+        <feDisplacementMap
+          in="SourceGraphic"
+          in2="softMap"
+          scale="150"
+          xChannelSelector="R"
+          yChannelSelector="G"
+        />
+      </filter>
+    </svg>
+    <style>
+        /* LIQUID GLASS STYLES */
+
+        .liquidGlass-wrapper {
+            position: relative;
+            display: flex;
+            font-weight: 300;
+            overflow: hidden;
+
+            color: black;
+            cursor: pointer;
+
+            box-shadow: 0 6px 6px rgba(0, 0, 0, 0.2), 0 0 20px rgba(0, 0, 0, 0.1);
+
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+        }
+
+        .liquidGlass-effect {
+            position: absolute;
+            z-index: 0;
+            inset: 0;
+
+            backdrop-filter: blur(3px);
+            filter: url(#glass-distortion);
+            overflow: hidden;
+            isolation: isolate;
+        }
+
+        .liquidGlass-tint {
+            z-index: 1;
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .liquidGlass-shine {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+
+            overflow: hidden;
+
+            box-shadow: inset 2px 2px 1px 0 rgba(255, 255, 255, 0.5),
+                inset -1px -1px 1px 1px rgba(255, 255, 255, 0.5);
+        }
+
+        .liquidGlass-text {
+            z-index: 3;
+            font-size: 2rem;
+            color: black;
+        }
+
+        /* OTHER STYLES */
+
+        body {
+            padding: 0;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: url("https://raw.githubusercontent.com/lucasromerodb/liquid-glass-effect-macos/refs/heads/main/assets/flowers.jpg")
+                center center;
+            background-size: 500px;
+            font-family: sans-serif;
+            font-weight: 300;
+
+            animation: moveBackground 60s linear infinite;
+        }
+
+        /* 
+        GREEN BACKGROUND
+        https://media.istockphoto.com/id/1430511443/vector/christmas-mistletoe-foliage-and-berries-vector-seamless-pattern.jpg?s=612x612&w=0&k=20&c=oqxlH7ytgd5yjBQroACirJ1gH7Au1tq8gmsdeGd-Crk=
+
+        ORANGE BACKGROUND
+        https://images.fineartamerica.com/images/artworkimages/mediumlarge/3/beautiful-orange-and-pastel-flowers-seamless-pattern-julien.jpg
+
+        MARGARITAS BACKGROUND
+        https://static.vecteezy.com/system/resources/previews/056/652/082/non_2x/hand-drawn-white-flower-seamless-pattern-floral-repeating-wallpaper-for-textile-design-fabric-print-wrapping-paper-cute-daisy-flowers-on-blue-background-repeated-ditsy-texture-vector.jpg
+
+        SPRING FLOWERS BACKGROUND
+        https://img.freepik.com/free-vector/flat-floral-spring-pattern-design_23-2150117078.jpg
+
+        VECTOR WINDS BACKGROUND
+        https://i.ibb.co/MDbLn4N4/vectors.png
+
+        RED FLOWERS BACKGROUND
+        https://www.publicdomainpictures.net/pictures/610000/velka/seamless-floral-wallpaper-art-1715193626Gct.jpg
+        */
+
+        a {
+            text-decoration: none;
+        }
+
+        .wrapper {
+            display: flex;
+            gap: 25px;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .menu,
+        .menu > div {
+            padding: 0.4rem;
+            border-radius: 1.8rem;
+        }
+
+        .menu:hover {
+            padding: 0.6rem;
+            border-radius: 1.8rem;
+        }
+
+        .menu > div > div {
+            font-size: 20px;
+            color: white;
+            padding: 0.4rem 0.6rem;
+            border-radius: 0.8rem;
+            transition: all 0.1s ease-in;
+        }
+
+        .menu > div > div:hover {
+            background-color: rgba(255, 255, 255, 0.5);
+            box-shadow: inset -2px -2px 2px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(2px);
+        }
+
+        .dock {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border-radius: 2rem;
+            padding: 0.6rem;
+        }
+
+        .dock,
+        .dock > div {
+            border-radius: 2rem;
+        }
+
+        .dock:hover {
+            padding: 0.8rem;
+            border-radius: 2.5rem;
+        }
+
+        .dock:hover > div {
+            border-radius: 2.5rem;
+        }
+
+        .dock img {
+            width: 75px;
+            padding: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+        }
+
+        .dock img:hover {
+            transform: scale(0.95);
+            transform-origin: center center;
+        }
+
+        .button {
+            padding: 1.5rem 2.5rem;
+            border-radius: 3rem;
+        }
+
+        .button,
+        .button > div {
+            border-radius: 3rem;
+        }
+
+        .button:hover {
+            padding: 1.8rem 2.8rem;
+        }
+
+        .button:hover > div {
+            border-radius: 4rem;
+        }
+
+        .button svg {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+        }
+
+        .button:hover svg {
+            transform: scale(0.95);
+        }
+
+        @keyframes moveBackground {
+            from {
+                background-position: 0% 0%;
+            }
+            to {
+                background-position: 0% -500%;
+            }
+        }
+    </style>
+</html>
